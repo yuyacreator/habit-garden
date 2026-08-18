@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>習慣花園</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js" onerror="">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+
+  :root{
+    --bg: #F6F3FC;
+    --bg-blob-1: #E9E3FB;
+    --bg-blob-2: #FFE9D6;
+    --card: #FFFFFF;
+    --border: #EAE4F7;
+    --ink: #2E2B4A;
+    --ink-dim: #8D89AA;
+    --primary: #6C63FF;
+    --primary-soft: #EFEDFF;
+    --mint: #2FBF8F;
+    --mint-soft: #E4F8F0;
+    --peach: #FF9F4D;
+    --peach-soft: #FFF0E0;
+    --pink: #FF6FA0;
+    --pink-soft: #FFE7EF;
+    --danger: #E5484D;
+    --shadow: 0 10px 30px rgba(108,99,255,0.12);
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      radial-gradient(480px 300px at 90% -5%, var(--bg-blob-2) 0%, transparent 70%),
+      radial-gradient(520px 340px at -10% 0%, var(--bg-blob-1) 0%, transparent 70%),
+      var(--bg);
+    color: var(--ink);
+    font-family: 'Noto Sans TC', sans-serif;
+    padding-bottom: 40px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .num, .fredoka{ font-family: 'Fredoka', 'Noto Sans TC', sans-serif; }
+
+  /* ---------- Login screen ---------- */
+  #loginScreen{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding: 24px;
+    text-align:center;
+  }
+  #loginScreen .emoji{ font-size:56px; margin-bottom:6px; }
+  #loginScreen h1{
+    font-family:'Fredoka',sans-serif;
+    font-size:30px;
+    margin: 0 0 6px;
+    color: var(--ink);
+  }
+  #loginScreen p{ color: var(--ink-dim); margin: 0 0 28px; font-size:14px; }
+  #googleBtn{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 999px;
+    padding: 13px 26px;
+    font-size: 15px;
+    font-weight:600;
+    color: var(--ink);
+    cursor:pointer;
+    box-shadow: var(--shadow);
+    transition: transform .12s ease;
+  }
+  #googleBtn:hover{ transform: translateY(-2px); }
+  #googleBtn svg{ width:20px; height:20px; }
+  #loginStatus{ margin-top:14px; font-size:12.5px; color: var(--ink-dim); min-height: 18px; }
+
+  /* ---------- App shell ---------- */
+  #app{ max-width: 640px; margin: 0 auto; padding: 20px 16px 0; }
+  #app[hidden]{ display:none; }
+
+  header.top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom: 18px;
+  }
+  header.top .brand{ display:flex; align-items:center; gap:10px; }
+  header.top .brand .mark{ font-size:26px; }
+  header.top .brand h1{ font-family:'Fredoka',sans-serif; font-size:20px; margin:0; }
+  header.top .user{ display:flex; align-items:center; gap:8px; }
+  header.top .user img{ width:32px; height:32px; border-radius:50%; border:2px solid var(--card); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+  header.top .user button{
+    background:none; border:none; color: var(--ink-dim); font-size:11px;
+    cursor:pointer; text-decoration:underline; padding:0;
+  }
+
+  nav.tabs{
+    display:flex;
+    gap:6px;
+    background: var(--card);
+    border-radius: 999px;
+    padding: 5px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+  }
+  nav.tabs button{
+    flex:1;
+    border:none;
+    background:transparent;
+    padding: 10px 6px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight:600;
+    color: var(--ink-dim);
+    cursor:pointer;
+    transition: background .15s ease, color .15s ease;
+  }
+  nav.tabs button.active{ background: var(--primary); color:#fff; }
+
+  section.tab{ display:none; animation: fade .2s ease; }
+  section.tab.active{ display:block; }
+  @keyframes fade{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;} }
+
+  /* ---------- Habit cards (today) ---------- */
+  .habit-card{
+    background: var(--card);
+    border-radius: 20px;
+    padding: 18px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+  }
+  .habit-card .row1{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom: 10px;
+  }
+  .habit-card .name{ font-weight:700; font-size:16px; display:flex; align-items:center; gap:8px; }
+  .habit-card .streak-badge{
+    font-size: 12px;
+    background: var(--mint-soft);
+    color: #1f8f68;
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-weight:600;
+    display:flex; align-items:center; gap:4px;
+    white-space:nowrap;
+  }
+  .habit-card .total-line{
+    display:flex; align-items:baseline; gap:6px; margin-bottom: 10px;
+  }
+  .habit-card .total-line .big{ font-family:'Fredoka',sans-serif; font-size:30px; color: var(--primary); }
+  .habit-card .total-line .unit{ font-size:13px; color: var(--ink-dim); }
+  .habit-card .total-line .goal-txt{ margin-left:auto; font-size:12px; color: var(--ink-dim); }
+
+  .progress-track{
+    height: 10px;
+    background: var(--primary-soft);
+    border-radius: 999px;
+    overflow:hidden;
+    margin-bottom: 14px;
+  }
+  .progress-fill{
+    height:100%;
+    background: linear-gradient(90deg, var(--primary), var(--pink));
+    border-radius: 999px;
+    transition: width .3s ease;
+  }
+
+  .quickadd-row{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px; }
+  .quickadd-row button{
+    background: var(--peach-soft);
+    color: #b95d00;
+    border: none;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-weight:700;
+    font-size: 13px;
+    cursor:pointer;
+    transition: transform .1s ease;
+  }
+  .quickadd-row button:active{ transform: scale(0.94); }
+
+  .manual-row{ display:flex; gap:8px; }
+  .manual-row input{
+    flex:1;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 9px 12px;
+    font-size:14px;
+    outline:none;
+    font-family:'Noto Sans TC',sans-serif;
+  }
+  .manual-row input:focus{ border-color: var(--primary); }
+  .manual-row button{
+    background: var(--primary);
+    color:#fff;
+    border:none;
+    border-radius: 12px;
+    padding: 0 16px;
+    font-weight:700;
+    font-size:13px;
+    cursor:pointer;
+  }
+
+  .empty-state{
+    text-align:center;
+    padding: 50px 20px;
+    color: var(--ink-dim);
+  }
+  .empty-state .emoji{ font-size:44px; margin-bottom:10px; }
+  .empty-state button{
+    margin-top:14px;
+    background: var(--primary);
+    color:#fff;
+    border:none;
+    border-radius:999px;
+    padding: 10px 20px;
+    font-weight:700;
+    cursor:pointer;
+  }
+
+  /* ---------- Habits management tab ---------- */
+  .form-card{
+    background: var(--card);
+    border-radius: 20px;
+    padding: 18px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    margin-bottom: 18px;
+  }
+  .form-card h3{ margin:0 0 12px; font-size:15px; font-family:'Fredoka',sans-serif; }
+  .field{ margin-bottom: 12px; }
+  .field label{ display:block; font-size:12px; color: var(--ink-dim); margin-bottom:5px; font-weight:600; }
+  .field input{
+    width:100%;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-size:14px;
+    outline:none;
+    font-family:'Noto Sans TC',sans-serif;
+  }
+  .field input:focus{ border-color: var(--primary); }
+  .field .hint{ font-size:11px; color:#b0acc7; margin-top:4px; }
+  .field-row{ display:flex; gap:10px; }
+  .field-row .field{ flex:1; }
+  .submit-btn{
+    width:100%;
+    background: var(--primary);
+    color:#fff;
+    border:none;
+    border-radius: 12px;
+    padding: 12px;
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+    margin-top: 4px;
+  }
+
+  .habit-manage-item{
+    background: var(--card);
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border: 1px solid var(--border);
+  }
+  .habit-manage-item .info b{ font-size:14px; }
+  .habit-manage-item .info div{ font-size:12px; color: var(--ink-dim); margin-top:2px; }
+  .habit-manage-item .actions{ display:flex; gap:8px; }
+  .habit-manage-item .actions button{
+    border:none; background: var(--primary-soft); color: var(--primary);
+    width:30px; height:30px; border-radius:50%; cursor:pointer; font-size:14px;
+  }
+  .habit-manage-item .actions button.del{ background: #FDEAEA; color: var(--danger); }
+
+  /* ---------- Calendar tab ---------- */
+  .habit-chips{ display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; margin-bottom:14px; }
+  .habit-chips button{
+    flex-shrink:0;
+    border: 1.5px solid var(--border);
+    background: var(--card);
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight:600;
+    color: var(--ink-dim);
+    cursor:pointer;
+  }
+  .habit-chips button.active{ background: var(--primary); border-color: var(--primary); color:#fff; }
+
+  .cal-nav{ display:flex; align-items:center; justify-content:space-between; margin-bottom: 12px; }
+  .cal-nav button{ background: var(--card); border:1px solid var(--border); width:32px; height:32px; border-radius:50%; cursor:pointer; font-size:14px; }
+  .cal-nav .label{ font-family:'Fredoka',sans-serif; font-size:16px; }
+
+  .cal-grid{
+    background: var(--card);
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+  }
+  .cal-weekdays{ display:grid; grid-template-columns: repeat(7,1fr); margin-bottom:6px; }
+  .cal-weekdays div{ text-align:center; font-size:11px; color: var(--ink-dim); font-weight:600; }
+  .cal-days{ display:grid; grid-template-columns: repeat(7,1fr); gap:4px; }
+  .cal-cell{
+    aspect-ratio: 1;
+    border-radius: 10px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    font-size: 12px;
+    color: var(--ink-dim);
+    background: #FAF9FE;
+    position:relative;
+  }
+  .cal-cell.pad{ background:transparent; }
+  .cal-cell .d{ font-weight:600; }
+  .cal-cell.done{ background: var(--mint-soft); color:#1f8f68; }
+  .cal-cell.done .d{ color:#1f8f68; }
+  .cal-cell.partial{ background: var(--peach-soft); color:#b95d00; }
+  .cal-cell.today{ box-shadow: inset 0 0 0 2px var(--primary); }
+  .cal-cell .mark{ font-size:12px; margin-top:1px; }
+
+  /* ---------- Stats tab ---------- */
+  .stat-summary{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .stat-box{
+    background: var(--card);
+    border-radius: 18px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    text-align:center;
+  }
+  .stat-box .val{ font-family:'Fredoka',sans-serif; font-size:26px; color: var(--primary); }
+  .stat-box .lbl{ font-size:11px; color: var(--ink-dim); margin-top:2px; }
+
+  .chart-card{
+    background: var(--card);
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .chart-card h4{ margin:0 0 10px; font-size:13px; color: var(--ink-dim); font-weight:700; }
+  .chart-card canvas{ max-height: 200px; }
+
+  .week-bars{ display:flex; flex-direction:column; gap:10px; }
+  .week-bar-row{ display:flex; align-items:center; gap:10px; }
+  .week-bar-row .lbl{ width:76px; font-size:12px; flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .week-bar-row .track{ flex:1; height:10px; background: var(--primary-soft); border-radius:999px; overflow:hidden; }
+  .week-bar-row .fill{ height:100%; background: linear-gradient(90deg, var(--mint), var(--primary)); }
+  .week-bar-row .pct{ width:36px; font-size:11px; text-align:right; color: var(--ink-dim); }
+
+  @media (max-width:420px){
+    .habit-card .total-line .big{ font-size:26px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div class="emoji">🌱</div>
+  <h1>習慣花園</h1>
+  <p>登入後,你的紀錄會保存在雲端,<br>換裝置也看得到。</p>
+  <button id="googleBtn">
+    <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4c-7.4 0-13.8 4.1-17.1 10.1z"/><path fill="#4CAF50" d="M24 44c5.5 0 10.4-1.9 14.3-5.1l-6.6-5.4c-2 1.4-4.7 2.3-7.7 2.3-5.2 0-9.6-3.3-11.2-7.9l-6.5 5C9.9 39.7 16.4 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.2 5.6l6.6 5.4C41.8 35.7 44 30.3 44 24c0-1.3-.1-2.7-.4-3.5z"/></svg>
+    使用 Google 登入
+  </button>
+  <div id="loginStatus"></div>
+</div>
+
+<div id="app" hidden>
+  <header class="top">
+    <div class="brand"><span class="mark">🌱</span><h1>習慣花園</h1></div>
+    <div class="user">
+      <img id="userAvatar" src="" alt="">
+      <button id="signOutBtn">登出</button>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button data-tab="today" class="active">今日</button>
+    <button data-tab="habits">習慣</button>
+    <button data-tab="calendar">月曆</button>
+    <button data-tab="stats">統計</button>
+  </nav>
+
+  <section class="tab active" id="tab-today"></section>
+
+  <section class="tab" id="tab-habits">
+    <div class="form-card">
+      <h3>＋ 新增習慣</h3>
+      <div class="field">
+        <label>習慣名稱</label>
+        <input id="hName" placeholder="例如:爬樓梯">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>單位</label>
+          <input id="hUnit" placeholder="例如:層、ml、次">
+        </div>
+        <div class="field">
+          <label>每日目標(可留空)</label>
+          <input id="hGoal" type="number" placeholder="例如:30">
+        </div>
+      </div>
+      <div class="field">
+        <label>快速按鈕數量(用逗號分開,最多 4 個)</label>
+        <input id="hQuick" placeholder="例如:5,10,20">
+        <div class="hint">會變成 App 裡的「+5」「+10」「+20」快速按鈕</div>
+      </div>
+      <button class="submit-btn" id="addHabitBtn">新增習慣</button>
+    </div>
+    <div id="habitManageList"></div>
+  </section>
+
+  <section class="tab" id="tab-calendar">
+    <div class="habit-chips" id="calHabitChips"></div>
+    <div class="cal-nav">
+      <button id="calPrev">‹</button>
+      <div class="label fredoka" id="calLabel">—</div>
+      <button id="calNext">›</button>
+    </div>
+    <div class="cal-grid">
+      <div class="cal-weekdays"><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div><div>日</div></div>
+      <div class="cal-days" id="calDays"></div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-stats">
+    <div class="habit-chips" id="statsHabitChips"></div>
+    <div class="chart-card">
+      <h4>近 14 天累計趨勢</h4>
+      <canvas id="trendChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <h4>本週各習慣完成率</h4>
+      <div class="week-bars" id="weekBars"></div>
+    </div>
+  </section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBfahNxiikOm_MlOr_A90BquRwFRM35Uho",
+  authDomain: "habit-tracker202608.firebaseapp.com",
+  projectId: "habit-tracker202608",
+  storageBucket: "habit-tracker202608.firebasestorage.app",
+  messagingSenderId: "944347991980",
+  appId: "1:944347991980:web:9b0007453ea9f8cba47409"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+let uid = null;
+let state = { habits: [], logs: {} };
+let unsub = null;
+let calCursor = new Date(); // month cursor
+let calSelectedHabit = null;
+let statsSelectedHabit = null;
+let trendChartInstance = null;
+
+/* ---------- Auth ---------- */
+document.getElementById('googleBtn').addEventListener('click', async () => {
+  document.getElementById('loginStatus').textContent = '登入中…';
+  try{
+    await signInWithPopup(auth, provider);
+  }catch(e){
+    document.getElementById('loginStatus').textContent = '登入失敗,請再試一次(' + e.code + ')';
+  }
+});
+document.getElementById('signOutBtn').addEventListener('click', () => signOut(auth));
+
+onAuthStateChanged(auth, (user) => {
+  if(user){
+    uid = user.uid;
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').hidden = false;
+    document.getElementById('userAvatar').src = user.photoURL || '';
+    listenToData();
+  }else{
+    uid = null;
+    if(unsub) unsub();
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('app').hidden = true;
+  }
+});
+
+function listenToData(){
+  const ref = doc(db, 'users', uid);
+  unsub = onSnapshot(ref, (snap) => {
+    if(snap.exists()){
+      state = snap.data();
+      if(!state.habits) state.habits = [];
+      if(!state.logs) state.logs = {};
+    }else{
+      state = { habits: [], logs: {} };
+      setDoc(ref, state);
+    }
+    if(!calSelectedHabit && state.habits.length) calSelectedHabit = state.habits[0].id;
+    if(!statsSelectedHabit && state.habits.length) statsSelectedHabit = state.habits[0].id;
+    renderAll();
+  });
+}
+
+async function saveState(){
+  const ref = doc(db, 'users', uid);
+  await setDoc(ref, state);
+}
+
+/* ---------- Date helpers ---------- */
+function pad(n){ return n<10 ? '0'+n : ''+n; }
+function fmt(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+const todayStr = () => fmt(new Date());
+
+function dayTotal(habitId, dateStr){
+  const h = state.logs[habitId];
+  if(!h || !h[dateStr]) return 0;
+  return h[dateStr].total || 0;
+}
+function isCompleted(habit, dateStr){
+  const total = dayTotal(habit.id, dateStr);
+  if(habit.goal){ return total >= habit.goal; }
+  return total > 0;
+}
+function calcStreak(habit){
+  let streak = 0;
+  let cursor = new Date();
+  if(!isCompleted(habit, fmt(cursor))){
+    cursor.setDate(cursor.getDate()-1);
+  }
+  while(isCompleted(habit, fmt(cursor))){
+    streak++;
+    cursor.setDate(cursor.getDate()-1);
+  }
+  return streak;
+}
+function streakEmoji(streak){
+  if(streak >= 14) return '🌸';
+  if(streak >= 7) return '🪴';
+  if(streak >= 3) return '🌿';
+  if(streak >= 1) return '🌱';
+  return '🌰';
+}
+
+/* ---------- Tabs ---------- */
+document.querySelectorAll('nav.tabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('section.tab').forEach(s=>s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+    if(btn.dataset.tab === 'stats') renderStats();
+    if(btn.dataset.tab === 'calendar') renderCalendar();
+  });
+});
+
+/* ---------- Render: Today ---------- */
+function renderToday(){
+  const container = document.getElementById('tab-today');
+  if(state.habits.length === 0){
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="emoji">🌾</div>
+        <p>還沒有任何習慣。</p>
+        <button onclick="document.querySelector('[data-tab=habits]').click()">去新增第一個習慣</button>
+      </div>`;
+    return;
+  }
+  const t = todayStr();
+  container.innerHTML = state.habits.map(h=>{
+    const total = dayTotal(h.id, t);
+    const streak = calcStreak(h);
+    const pct = h.goal ? Math.min(100, Math.round(total/h.goal*100)) : null;
+    const quickBtns = (h.quickAdds||[]).map(q=>`<button data-add="${h.id}" data-amt="${q}">+${q}</button>`).join('');
+    return `
+      <div class="habit-card">
+        <div class="row1">
+          <div class="name">${escapeHtml(h.name)}</div>
+          <div class="streak-badge">${streakEmoji(streak)} ${streak} 天</div>
+        </div>
+        <div class="total-line">
+          <span class="big num">${total}</span>
+          <span class="unit">${escapeHtml(h.unit||'')}</span>
+          ${h.goal ? `<span class="goal-txt">${total>=h.goal ? '🎉 已達標' : '還差 '+(h.goal-total)+' '+escapeHtml(h.unit||'')}</span>` : ''}
+        </div>
+        ${h.goal ? `<div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>` : ''}
+        <div class="quickadd-row">${quickBtns}</div>
+        <div class="manual-row">
+          <input type="number" placeholder="輸入任意數量" id="manual-${h.id}">
+          <button data-manual="${h.id}">加入</button>
+        </div>
+      </div>`;
+  }).join('');
+
+  container.querySelectorAll('[data-add]').forEach(btn=>{
+    btn.addEventListener('click', ()=> logEntry(btn.dataset.add, parseFloat(btn.dataset.amt)));
+  });
+  container.querySelectorAll('[data-manual]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.dataset.manual;
+      const input = document.getElementById('manual-'+id);
+      const val = parseFloat(input.value);
+      if(!isNaN(val) && val !== 0){
+        logEntry(id, val);
+        input.value = '';
+      }
+    });
+  });
+}
+
+async function logEntry(habitId, amount){
+  const t = todayStr();
+  if(!state.logs[habitId]) state.logs[habitId] = {};
+  if(!state.logs[habitId][t]) state.logs[habitId][t] = { total: 0, entries: [] };
+  state.logs[habitId][t].total += amount;
+  state.logs[habitId][t].entries.push({ amt: amount, ts: Date.now() });
+  renderToday();
+  await saveState();
+}
+
+/* ---------- Render: Habits management ---------- */
+document.getElementById('addHabitBtn').addEventListener('click', async ()=>{
+  const name = document.getElementById('hName').value.trim();
+  const unit = document.getElementById('hUnit').value.trim();
+  const goalRaw = document.getElementById('hGoal').value.trim();
+  const quickRaw = document.getElementById('hQuick').value.trim();
+  if(!name) return;
+  const goal = goalRaw ? parseFloat(goalRaw) : null;
+  const quickAdds = quickRaw ? quickRaw.split(',').map(s=>parseFloat(s.trim())).filter(n=>!isNaN(n)).slice(0,4) : [];
+  const habit = {
+    id: 'hb_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
+    name, unit, goal, quickAdds
+  };
+  state.habits.push(habit);
+  document.getElementById('hName').value = '';
+  document.getElementById('hUnit').value = '';
+  document.getElementById('hGoal').value = '';
+  document.getElementById('hQuick').value = '';
+  renderAll();
+  await saveState();
+});
+
+function renderHabitManageList(){
+  const list = document.getElementById('habitManageList');
+  if(state.habits.length === 0){ list.innerHTML = ''; return; }
+  list.innerHTML = state.habits.map(h=>`
+    <div class="habit-manage-item">
+      <div class="info">
+        <b>${escapeHtml(h.name)}</b>
+        <div>單位:${escapeHtml(h.unit||'—')} ${h.goal ? ' · 目標 '+h.goal : ''} ${h.quickAdds&&h.quickAdds.length ? ' · 快速鍵 '+h.quickAdds.join('/') : ''}</div>
+      </div>
+      <div class="actions">
+        <button class="del" data-del="${h.id}">✕</button>
+      </div>
+    </div>`).join('');
+  list.querySelectorAll('[data-del]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      if(!confirm('確定要刪除「'+ (state.habits.find(h=>h.id===btn.dataset.del)||{}).name +'」嗎?紀錄也會一併移除。')) return;
+      const id = btn.dataset.del;
+      state.habits = state.habits.filter(h=>h.id!==id);
+      delete state.logs[id];
+      if(calSelectedHabit===id) calSelectedHabit = state.habits[0]?.id || null;
+      if(statsSelectedHabit===id) statsSelectedHabit = state.habits[0]?.id || null;
+      renderAll();
+      await saveState();
+    });
+  });
+}
+
+/* ---------- Render: Calendar ---------- */
+function renderCalHabitChips(){
+  const wrap = document.getElementById('calHabitChips');
+  wrap.innerHTML = state.habits.map(h=>`<button data-h="${h.id}" class="${h.id===calSelectedHabit?'active':''}">${escapeHtml(h.name)}</button>`).join('');
+  wrap.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ calSelectedHabit = btn.dataset.h; renderCalendar(); });
+  });
+}
+
+document.getElementById('calPrev').addEventListener('click', ()=>{ calCursor.setMonth(calCursor.getMonth()-1); renderCalendar(); });
+document.getElementById('calNext').addEventListener('click', ()=>{ calCursor.setMonth(calCursor.getMonth()+1); renderCalendar(); });
+
+function renderCalendar(){
+  renderCalHabitChips();
+  const label = document.getElementById('calLabel');
+  label.textContent = calCursor.getFullYear() + ' 年 ' + (calCursor.getMonth()+1) + ' 月';
+
+  const daysEl = document.getElementById('calDays');
+  const habit = state.habits.find(h=>h.id===calSelectedHabit);
+  if(!habit){ daysEl.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--ink-dim);padding:20px;font-size:13px;">先去新增一個習慣吧</div>'; return; }
+
+  const year = calCursor.getFullYear(), month = calCursor.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const startOffset = (firstDay.getDay()+6)%7; // Monday=0
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const t = todayStr();
+
+  let html = '';
+  for(let i=0;i<startOffset;i++) html += '<div class="cal-cell pad"></div>';
+  for(let d=1; d<=daysInMonth; d++){
+    const dateObj = new Date(year, month, d);
+    const dateStr = fmt(dateObj);
+    const total = dayTotal(habit.id, dateStr);
+    const completed = isCompleted(habit, dateStr);
+    const partial = !completed && total > 0;
+    const isToday = dateStr === t;
+    html += `<div class="cal-cell ${completed?'done':''} ${partial?'partial':''} ${isToday?'today':''}">
+      <div class="d">${d}</div>
+      ${completed ? '<div class="mark">✓</div>' : (partial ? `<div class="mark">${total}</div>` : '')}
+    </div>`;
+  }
+  daysEl.innerHTML = html;
+}
+
+/* ---------- Render: Stats ---------- */
+function renderStatsHabitChips(){
+  const wrap = document.getElementById('statsHabitChips');
+  wrap.innerHTML = state.habits.map(h=>`<button data-h="${h.id}" class="${h.id===statsSelectedHabit?'active':''}">${escapeHtml(h.name)}</button>`).join('');
+  wrap.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ statsSelectedHabit = btn.dataset.h; renderStats(); });
+  });
+}
+
+function renderStats(){
+  renderStatsHabitChips();
+  const habit = state.habits.find(h=>h.id===statsSelectedHabit);
+  const ctx = document.getElementById('trendChart');
+
+  if(trendChartInstance){ trendChartInstance.destroy(); trendChartInstance = null; }
+
+  if(habit && window.Chart){
+    const labels = [];
+    const data = [];
+    for(let i=13; i>=0; i--){
+      const d = new Date();
+      d.setDate(d.getDate()-i);
+      labels.push((d.getMonth()+1)+'/'+d.getDate());
+      data.push(dayTotal(habit.id, fmt(d)));
+    }
+    trendChartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: habit.name,
+          data,
+          borderColor: '#6C63FF',
+          backgroundColor: 'rgba(108,99,255,0.12)',
+          tension: 0.35,
+          fill: true,
+          pointRadius: 3,
+          pointBackgroundColor: '#6C63FF'
+        }, ...(habit.goal ? [{
+          label: '目標',
+          data: labels.map(()=>habit.goal),
+          borderColor: '#FF9F4D',
+          borderDash: [5,5],
+          pointRadius: 0,
+          fill: false
+        }] : [])]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: !!habit.goal, labels: { font: { size: 11 } } } },
+        scales: {
+          x: { ticks: { font: { size: 10 } } },
+          y: { beginAtZero: true, ticks: { font: { size: 10 } } }
+        }
+      }
+    });
+  }
+
+  // Weekly completion bars
+  const weekBars = document.getElementById('weekBars');
+  if(state.habits.length === 0){ weekBars.innerHTML = '<div style="color:var(--ink-dim);font-size:13px;">還沒有資料</div>'; return; }
+
+  const today = new Date();
+  const dow = (today.getDay()+6)%7;
+  const monday = new Date(today); monday.setDate(today.getDate()-dow);
+  const weekDates = [];
+  for(let i=0;i<7;i++){ const d = new Date(monday); d.setDate(monday.getDate()+i); weekDates.push(d); }
+
+  weekBars.innerHTML = state.habits.map(h=>{
+    let doneCount = 0;
+    weekDates.forEach(d=>{
+      if(d <= today && isCompleted(h, fmt(d))) doneCount++;
+    });
+    const possibleDays = weekDates.filter(d=>d<=today).length;
+    const pct = possibleDays ? Math.round(doneCount/possibleDays*100) : 0;
+    return `
+      <div class="week-bar-row">
+        <div class="lbl">${escapeHtml(h.name)}</div>
+        <div class="track"><div class="fill" style="width:${pct}%"></div></div>
+        <div class="pct">${pct}%</div>
+      </div>`;
+  }).join('');
+}
+
+/* ---------- Utils ---------- */
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str == null ? '' : String(str);
+  return div.innerHTML;
+}
+
+function renderAll(){
+  renderToday();
+  renderHabitManageList();
+  renderCalHabitChips();
+  renderStatsHabitChips();
+  if(document.getElementById('tab-calendar').classList.contains('active')) renderCalendar();
+  if(document.getElementById('tab-stats').classList.contains('active')) renderStats();
+}
+</script>
+</body>
+</html>
