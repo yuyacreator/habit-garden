@@ -37,6 +37,7 @@
       var(--bg);
     color: var(--ink);
     font-family: 'Noto Sans TC', sans-serif;
+    font-size: 17px;
     padding-bottom: 40px;
     -webkit-font-smoothing: antialiased;
   }
@@ -52,14 +53,14 @@
     padding: 24px;
     text-align:center;
   }
-  #loginScreen .emoji{ font-size:56px; margin-bottom:6px; }
+  #loginScreen .logo-mark{ width:64px; height:64px; color: var(--mint); margin-bottom:10px; }
   #loginScreen h1{
     font-family:'Fredoka',sans-serif;
-    font-size:30px;
-    margin: 0 0 6px;
+    font-size:34px;
+    margin: 0 0 8px;
     color: var(--ink);
   }
-  #loginScreen p{ color: var(--ink-dim); margin: 0 0 28px; font-size:14px; }
+  #loginScreen p{ color: var(--ink-dim); margin: 0 0 28px; font-size:16px; line-height:1.6; }
   #googleBtn{
     display:flex;
     align-items:center;
@@ -67,8 +68,8 @@
     background: var(--card);
     border: 1.5px solid var(--border);
     border-radius: 999px;
-    padding: 13px 26px;
-    font-size: 15px;
+    padding: 14px 28px;
+    font-size: 16px;
     font-weight:600;
     color: var(--ink);
     cursor:pointer;
@@ -77,7 +78,7 @@
   }
   #googleBtn:hover{ transform: translateY(-2px); }
   #googleBtn svg{ width:20px; height:20px; }
-  #loginStatus{ margin-top:14px; font-size:12.5px; color: var(--ink-dim); min-height: 18px; }
+  #loginStatus{ margin-top:14px; font-size:13.5px; color: var(--ink-dim); min-height: 18px; }
 
   /* ---------- App shell ---------- */
   #app{ max-width: 640px; margin: 0 auto; padding: 20px 16px 0; }
@@ -90,12 +91,12 @@
     margin-bottom: 18px;
   }
   header.top .brand{ display:flex; align-items:center; gap:10px; }
-  header.top .brand .mark{ font-size:26px; }
-  header.top .brand h1{ font-family:'Fredoka',sans-serif; font-size:20px; margin:0; }
+  header.top .brand .mark{ width:30px; height:30px; color: var(--mint); flex-shrink:0; }
+  header.top .brand h1{ font-family:'Fredoka',sans-serif; font-size:22px; margin:0; }
   header.top .user{ display:flex; align-items:center; gap:8px; }
-  header.top .user img{ width:32px; height:32px; border-radius:50%; border:2px solid var(--card); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+  header.top .user img{ width:34px; height:34px; border-radius:50%; border:2px solid var(--card); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
   header.top .user button{
-    background:none; border:none; color: var(--ink-dim); font-size:11px;
+    background:none; border:none; color: var(--ink-dim); font-size:13px;
     cursor:pointer; text-decoration:underline; padding:0;
   }
 
@@ -112,9 +113,9 @@
     flex:1;
     border:none;
     background:transparent;
-    padding: 10px 6px;
+    padding: 11px 6px;
     border-radius: 999px;
-    font-size: 13px;
+    font-size: 15px;
     font-weight:600;
     color: var(--ink-dim);
     cursor:pointer;
@@ -141,23 +142,25 @@
     align-items:flex-start;
     margin-bottom: 10px;
   }
-  .habit-card .name{ font-weight:700; font-size:16px; display:flex; align-items:center; gap:8px; }
+  .habit-card .name{ font-weight:700; font-size:19px; display:flex; align-items:center; gap:8px; }
   .habit-card .streak-badge{
-    font-size: 12px;
+    font-size: 14px;
     background: var(--mint-soft);
     color: #1f8f68;
     border-radius: 999px;
-    padding: 4px 10px;
-    font-weight:600;
-    display:flex; align-items:center; gap:4px;
+    padding: 5px 12px 5px 8px;
+    font-weight:700;
+    display:flex; align-items:center; gap:5px;
     white-space:nowrap;
+    flex-shrink:0;
   }
+  .habit-card .streak-badge svg{ width:20px; height:20px; }
   .habit-card .total-line{
     display:flex; align-items:baseline; gap:6px; margin-bottom: 10px;
   }
-  .habit-card .total-line .big{ font-family:'Fredoka',sans-serif; font-size:30px; color: var(--primary); }
-  .habit-card .total-line .unit{ font-size:13px; color: var(--ink-dim); }
-  .habit-card .total-line .goal-txt{ margin-left:auto; font-size:12px; color: var(--ink-dim); }
+  .habit-card .total-line .big{ font-family:'Fredoka',sans-serif; font-size:36px; color: var(--primary); }
+  .habit-card .total-line .unit{ font-size:15px; color: var(--ink-dim); }
+  .habit-card .total-line .goal-txt{ margin-left:auto; font-size:13px; color: var(--ink-dim); }
 
   .progress-track{
     height: 10px;
@@ -179,9 +182,9 @@
     color: #b95d00;
     border: none;
     border-radius: 999px;
-    padding: 8px 14px;
+    padding: 9px 16px;
     font-weight:700;
-    font-size: 13px;
+    font-size: 15px;
     cursor:pointer;
     transition: transform .1s ease;
   }
@@ -192,8 +195,8 @@
     flex:1;
     border: 1.5px solid var(--border);
     border-radius: 12px;
-    padding: 9px 12px;
-    font-size:14px;
+    padding: 10px 12px;
+    font-size:16px;
     outline:none;
     font-family:'Noto Sans TC',sans-serif;
   }
@@ -203,9 +206,9 @@
     color:#fff;
     border:none;
     border-radius: 12px;
-    padding: 0 16px;
+    padding: 0 18px;
     font-weight:700;
-    font-size:13px;
+    font-size:15px;
     cursor:pointer;
   }
 
@@ -213,16 +216,18 @@
     text-align:center;
     padding: 50px 20px;
     color: var(--ink-dim);
+    font-size: 16px;
   }
-  .empty-state .emoji{ font-size:44px; margin-bottom:10px; }
+  .empty-state .logo-mark{ width:48px; height:48px; color: var(--primary); margin-bottom:12px; }
   .empty-state button{
     margin-top:14px;
     background: var(--primary);
     color:#fff;
     border:none;
     border-radius:999px;
-    padding: 10px 20px;
+    padding: 11px 22px;
     font-weight:700;
+    font-size: 15px;
     cursor:pointer;
   }
 
@@ -235,20 +240,20 @@
     border: 1px solid var(--border);
     margin-bottom: 18px;
   }
-  .form-card h3{ margin:0 0 12px; font-size:15px; font-family:'Fredoka',sans-serif; }
-  .field{ margin-bottom: 12px; }
-  .field label{ display:block; font-size:12px; color: var(--ink-dim); margin-bottom:5px; font-weight:600; }
+  .form-card h3{ margin:0 0 14px; font-size:17px; font-family:'Fredoka',sans-serif; }
+  .field{ margin-bottom: 13px; }
+  .field label{ display:block; font-size:13.5px; color: var(--ink-dim); margin-bottom:5px; font-weight:600; }
   .field input{
     width:100%;
     border: 1.5px solid var(--border);
     border-radius: 12px;
-    padding: 10px 12px;
-    font-size:14px;
+    padding: 11px 12px;
+    font-size:16px;
     outline:none;
     font-family:'Noto Sans TC',sans-serif;
   }
   .field input:focus{ border-color: var(--primary); }
-  .field .hint{ font-size:11px; color:#b0acc7; margin-top:4px; }
+  .field .hint{ font-size:12.5px; color:#b0acc7; margin-top:4px; }
   .field-row{ display:flex; gap:10px; }
   .field-row .field{ flex:1; }
   .submit-btn{
@@ -257,30 +262,43 @@
     color:#fff;
     border:none;
     border-radius: 12px;
-    padding: 12px;
+    padding: 13px;
     font-weight:700;
-    font-size:14px;
+    font-size:16px;
     cursor:pointer;
     margin-top: 4px;
+  }
+  .cancel-btn{
+    width:100%;
+    background: transparent;
+    color: var(--ink-dim);
+    border:none;
+    padding: 10px;
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+    text-decoration: underline;
   }
 
   .habit-manage-item{
     background: var(--card);
     border-radius: 16px;
-    padding: 14px 16px;
+    padding: 15px 16px;
     margin-bottom: 10px;
     display:flex;
     justify-content:space-between;
     align-items:center;
     border: 1px solid var(--border);
   }
-  .habit-manage-item .info b{ font-size:14px; }
-  .habit-manage-item .info div{ font-size:12px; color: var(--ink-dim); margin-top:2px; }
-  .habit-manage-item .actions{ display:flex; gap:8px; }
+  .habit-manage-item .info b{ font-size:16px; }
+  .habit-manage-item .info div{ font-size:13.5px; color: var(--ink-dim); margin-top:3px; }
+  .habit-manage-item .actions{ display:flex; gap:8px; flex-shrink:0; margin-left:10px; }
   .habit-manage-item .actions button{
     border:none; background: var(--primary-soft); color: var(--primary);
-    width:30px; height:30px; border-radius:50%; cursor:pointer; font-size:14px;
+    width:34px; height:34px; border-radius:50%; cursor:pointer; font-size:15px;
+    display:flex; align-items:center; justify-content:center;
   }
+  .habit-manage-item .actions button svg{ width:16px; height:16px; }
   .habit-manage-item .actions button.del{ background: #FDEAEA; color: var(--danger); }
 
   /* ---------- Calendar tab ---------- */
@@ -289,9 +307,9 @@
     flex-shrink:0;
     border: 1.5px solid var(--border);
     background: var(--card);
-    padding: 8px 14px;
+    padding: 9px 16px;
     border-radius: 999px;
-    font-size: 13px;
+    font-size: 15px;
     font-weight:600;
     color: var(--ink-dim);
     cursor:pointer;
@@ -299,8 +317,8 @@
   .habit-chips button.active{ background: var(--primary); border-color: var(--primary); color:#fff; }
 
   .cal-nav{ display:flex; align-items:center; justify-content:space-between; margin-bottom: 12px; }
-  .cal-nav button{ background: var(--card); border:1px solid var(--border); width:32px; height:32px; border-radius:50%; cursor:pointer; font-size:14px; }
-  .cal-nav .label{ font-family:'Fredoka',sans-serif; font-size:16px; }
+  .cal-nav button{ background: var(--card); border:1px solid var(--border); width:34px; height:34px; border-radius:50%; cursor:pointer; font-size:16px; }
+  .cal-nav .label{ font-family:'Fredoka',sans-serif; font-size:18px; }
 
   .cal-grid{
     background: var(--card);
@@ -310,7 +328,7 @@
     border: 1px solid var(--border);
   }
   .cal-weekdays{ display:grid; grid-template-columns: repeat(7,1fr); margin-bottom:6px; }
-  .cal-weekdays div{ text-align:center; font-size:11px; color: var(--ink-dim); font-weight:600; }
+  .cal-weekdays div{ text-align:center; font-size:13px; color: var(--ink-dim); font-weight:600; }
   .cal-days{ display:grid; grid-template-columns: repeat(7,1fr); gap:4px; }
   .cal-cell{
     aspect-ratio: 1;
@@ -319,7 +337,7 @@
     flex-direction:column;
     align-items:center;
     justify-content:center;
-    font-size: 12px;
+    font-size: 14px;
     color: var(--ink-dim);
     background: #FAF9FE;
     position:relative;
@@ -330,7 +348,8 @@
   .cal-cell.done .d{ color:#1f8f68; }
   .cal-cell.partial{ background: var(--peach-soft); color:#b95d00; }
   .cal-cell.today{ box-shadow: inset 0 0 0 2px var(--primary); }
-  .cal-cell .mark{ font-size:12px; margin-top:1px; }
+  .cal-cell .mark{ font-size:13px; margin-top:1px; }
+  .cal-cell .mark svg{ width:14px; height:14px; }
 
   /* ---------- Stats tab ---------- */
   .stat-summary{
@@ -347,8 +366,8 @@
     border: 1px solid var(--border);
     text-align:center;
   }
-  .stat-box .val{ font-family:'Fredoka',sans-serif; font-size:26px; color: var(--primary); }
-  .stat-box .lbl{ font-size:11px; color: var(--ink-dim); margin-top:2px; }
+  .stat-box .val{ font-family:'Fredoka',sans-serif; font-size:28px; color: var(--primary); }
+  .stat-box .lbl{ font-size:12.5px; color: var(--ink-dim); margin-top:2px; }
 
   .chart-card{
     background: var(--card);
@@ -358,15 +377,15 @@
     border: 1px solid var(--border);
     margin-bottom: 16px;
   }
-  .chart-card h4{ margin:0 0 10px; font-size:13px; color: var(--ink-dim); font-weight:700; }
+  .chart-card h4{ margin:0 0 10px; font-size:14.5px; color: var(--ink-dim); font-weight:700; }
   .chart-card canvas{ max-height: 200px; }
 
-  .week-bars{ display:flex; flex-direction:column; gap:10px; }
+  .week-bars{ display:flex; flex-direction:column; gap:11px; }
   .week-bar-row{ display:flex; align-items:center; gap:10px; }
-  .week-bar-row .lbl{ width:76px; font-size:12px; flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .week-bar-row .track{ flex:1; height:10px; background: var(--primary-soft); border-radius:999px; overflow:hidden; }
+  .week-bar-row .lbl{ width:84px; font-size:14px; flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .week-bar-row .track{ flex:1; height:11px; background: var(--primary-soft); border-radius:999px; overflow:hidden; }
   .week-bar-row .fill{ height:100%; background: linear-gradient(90deg, var(--mint), var(--primary)); }
-  .week-bar-row .pct{ width:36px; font-size:11px; text-align:right; color: var(--ink-dim); }
+  .week-bar-row .pct{ width:40px; font-size:13px; text-align:right; color: var(--ink-dim); }
 
   @media (max-width:420px){
     .habit-card .total-line .big{ font-size:26px; }
@@ -376,7 +395,12 @@
 <body>
 
 <div id="loginScreen">
-  <div class="emoji">🌱</div>
+  <svg class="logo-mark" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M11 28c-1-6 0-11 3-14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M9 27c9 3 15-1 16-9-8-2-14 2-16 9z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M14 24c1-6 4-10 9-12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M23 12c-8 1-10 6-9 12 7-1 10-6 9-12z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
+  </svg>
   <h1>習慣花園</h1>
   <p>登入後,你的紀錄會保存在雲端,<br>換裝置也看得到。</p>
   <button id="googleBtn">
@@ -388,7 +412,13 @@
 
 <div id="app" hidden>
   <header class="top">
-    <div class="brand"><span class="mark">🌱</span><h1>習慣花園</h1></div>
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11 28c-1-6 0-11 3-14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M9 27c9 3 15-1 16-9-8-2-14 2-16 9z" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h1>習慣花園</h1>
+    </div>
     <div class="user">
       <img id="userAvatar" src="" alt="">
       <button id="signOutBtn">登出</button>
@@ -406,7 +436,7 @@
 
   <section class="tab" id="tab-habits">
     <div class="form-card">
-      <h3>＋ 新增習慣</h3>
+      <h3 id="formTitle">＋ 新增習慣</h3>
       <div class="field">
         <label>習慣名稱</label>
         <input id="hName" placeholder="例如:爬樓梯">
@@ -422,11 +452,12 @@
         </div>
       </div>
       <div class="field">
-        <label>快速按鈕數量(用逗號分開,最多 4 個)</label>
+        <label>快速加量(最多 4 個)</label>
         <input id="hQuick" placeholder="例如:5,10,20">
-        <div class="hint">會變成 App 裡的「+5」「+10」「+20」快速按鈕</div>
+        <div class="hint">用逗號分開,會變成「+5」「+10」「+20」這種快速按鈕</div>
       </div>
       <button class="submit-btn" id="addHabitBtn">新增習慣</button>
+      <button class="cancel-btn" id="cancelEditBtn" style="display:none;">取消編輯</button>
     </div>
     <div id="habitManageList"></div>
   </section>
@@ -484,6 +515,7 @@ let calCursor = new Date(); // month cursor
 let calSelectedHabit = null;
 let statsSelectedHabit = null;
 let trendChartInstance = null;
+let editingHabitId = null;
 
 /* ---------- Auth ---------- */
 document.getElementById('googleBtn').addEventListener('click', async () => {
@@ -560,12 +592,19 @@ function calcStreak(habit){
   }
   return streak;
 }
-function streakEmoji(streak){
-  if(streak >= 14) return '🌸';
-  if(streak >= 7) return '🪴';
-  if(streak >= 3) return '🌿';
-  if(streak >= 1) return '🌱';
-  return '🌰';
+const STREAK_ICONS = {
+  seed: `<svg viewBox="0 0 32 32" fill="none"><path d="M16 24c-5-2-8-8-4-14 3-4 8-5 11-2 3 5 0 11-4 14-1 1-2 2-3 2z" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  sprout: `<svg viewBox="0 0 32 32" fill="none"><path d="M16 27V17" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M16 19c-2-1-6-1-7-5 4-1 7 1 7 5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  small: `<svg viewBox="0 0 32 32" fill="none"><path d="M16 27V14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M16 20c-2-1-6-1-7-5 4-1 7 1 7 5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 16c2-1 5-1 6-4-3-1-6 0-6 4z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  leafy: `<svg viewBox="0 0 32 32" fill="none"><path d="M16 28V12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M16 21c-2-1-6-1-7-5 4-1 7 1 7 5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 17c2-1 6-1 7-5-4-1-7 1-7 5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 13c-1.5-1-4-1-5-3.5 3-1 5 0.5 5 3.5z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  flower: `<svg viewBox="0 0 32 32" fill="none"><path d="M16 28V16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M16 20c-2-1-5-1-6-4 3-1 6 1 6 4z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><g stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M16 10c-2-2-2-5 0-6 2 1 2 4 0 6z"/><path d="M16 10c-2-2-2-5 0-6 2 1 2 4 0 6z" transform="rotate(72 16 10)"/><path d="M16 10c-2-2-2-5 0-6 2 1 2 4 0 6z" transform="rotate(144 16 10)"/><path d="M16 10c-2-2-2-5 0-6 2 1 2 4 0 6z" transform="rotate(216 16 10)"/><path d="M16 10c-2-2-2-5 0-6 2 1 2 4 0 6z" transform="rotate(288 16 10)"/></g><circle cx="16" cy="10" r="1.8" fill="currentColor"/></svg>`
+};
+function streakIcon(streak){
+  if(streak >= 14) return STREAK_ICONS.flower;
+  if(streak >= 7) return STREAK_ICONS.leafy;
+  if(streak >= 3) return STREAK_ICONS.small;
+  if(streak >= 1) return STREAK_ICONS.sprout;
+  return STREAK_ICONS.seed;
 }
 
 /* ---------- Tabs ---------- */
@@ -586,7 +625,11 @@ function renderToday(){
   if(state.habits.length === 0){
     container.innerHTML = `
       <div class="empty-state">
-        <div class="emoji">🌾</div>
+        <svg class="logo-mark" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M16 27V15" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M16 19c-2-1-6-1-7-5 4-1 7 1 7 5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16 15c2-1 5-1 6-4-3-1-6 0-6 4z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
         <p>還沒有任何習慣。</p>
         <button onclick="document.querySelector('[data-tab=habits]').click()">去新增第一個習慣</button>
       </div>`;
@@ -602,12 +645,12 @@ function renderToday(){
       <div class="habit-card">
         <div class="row1">
           <div class="name">${escapeHtml(h.name)}</div>
-          <div class="streak-badge">${streakEmoji(streak)} ${streak} 天</div>
+          <div class="streak-badge">${streakIcon(streak)} ${streak} 天</div>
         </div>
         <div class="total-line">
           <span class="big num">${total}</span>
           <span class="unit">${escapeHtml(h.unit||'')}</span>
-          ${h.goal ? `<span class="goal-txt">${total>=h.goal ? '🎉 已達標' : '還差 '+(h.goal-total)+' '+escapeHtml(h.unit||'')}</span>` : ''}
+          ${h.goal ? `<span class="goal-txt">${total>=h.goal ? '<b style="color:#1f8f68">已達標</b>' : '還差 '+(h.goal-total)+' '+escapeHtml(h.unit||'')}</span>` : ''}
         </div>
         ${h.goal ? `<div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>` : ''}
         <div class="quickadd-row">${quickBtns}</div>
@@ -645,6 +688,35 @@ async function logEntry(habitId, amount){
 }
 
 /* ---------- Render: Habits management ---------- */
+function clearHabitForm(){
+  document.getElementById('hName').value = '';
+  document.getElementById('hUnit').value = '';
+  document.getElementById('hGoal').value = '';
+  document.getElementById('hQuick').value = '';
+}
+
+function exitEditMode(){
+  editingHabitId = null;
+  clearHabitForm();
+  document.getElementById('formTitle').textContent = '＋ 新增習慣';
+  document.getElementById('addHabitBtn').textContent = '新增習慣';
+  document.getElementById('cancelEditBtn').style.display = 'none';
+}
+
+function enterEditMode(habit){
+  editingHabitId = habit.id;
+  document.getElementById('hName').value = habit.name;
+  document.getElementById('hUnit').value = habit.unit || '';
+  document.getElementById('hGoal').value = habit.goal || '';
+  document.getElementById('hQuick').value = (habit.quickAdds||[]).join(',');
+  document.getElementById('formTitle').textContent = '✎ 編輯習慣';
+  document.getElementById('addHabitBtn').textContent = '儲存修改';
+  document.getElementById('cancelEditBtn').style.display = 'block';
+  document.querySelector('.form-card').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+document.getElementById('cancelEditBtn').addEventListener('click', exitEditMode);
+
 document.getElementById('addHabitBtn').addEventListener('click', async ()=>{
   const name = document.getElementById('hName').value.trim();
   const unit = document.getElementById('hUnit').value.trim();
@@ -653,15 +725,19 @@ document.getElementById('addHabitBtn').addEventListener('click', async ()=>{
   if(!name) return;
   const goal = goalRaw ? parseFloat(goalRaw) : null;
   const quickAdds = quickRaw ? quickRaw.split(',').map(s=>parseFloat(s.trim())).filter(n=>!isNaN(n)).slice(0,4) : [];
-  const habit = {
-    id: 'hb_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
-    name, unit, goal, quickAdds
-  };
-  state.habits.push(habit);
-  document.getElementById('hName').value = '';
-  document.getElementById('hUnit').value = '';
-  document.getElementById('hGoal').value = '';
-  document.getElementById('hQuick').value = '';
+
+  if(editingHabitId){
+    const h = state.habits.find(h=>h.id===editingHabitId);
+    if(h){ h.name = name; h.unit = unit; h.goal = goal; h.quickAdds = quickAdds; }
+    exitEditMode();
+  }else{
+    const habit = {
+      id: 'hb_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
+      name, unit, goal, quickAdds
+    };
+    state.habits.push(habit);
+    clearHabitForm();
+  }
   renderAll();
   await saveState();
 });
@@ -676,15 +752,25 @@ function renderHabitManageList(){
         <div>單位:${escapeHtml(h.unit||'—')} ${h.goal ? ' · 目標 '+h.goal : ''} ${h.quickAdds&&h.quickAdds.length ? ' · 快速鍵 '+h.quickAdds.join('/') : ''}</div>
       </div>
       <div class="actions">
-        <button class="del" data-del="${h.id}">✕</button>
+        <button class="edit" data-edit="${h.id}" aria-label="編輯">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4 20l1-4.5L15.5 5 19 8.5 8.5 19 4 20z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="del" data-del="${h.id}" aria-label="刪除">✕</button>
       </div>
     </div>`).join('');
+  list.querySelectorAll('[data-edit]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const habit = state.habits.find(h=>h.id===btn.dataset.edit);
+      if(habit) enterEditMode(habit);
+    });
+  });
   list.querySelectorAll('[data-del]').forEach(btn=>{
     btn.addEventListener('click', async ()=>{
       if(!confirm('確定要刪除「'+ (state.habits.find(h=>h.id===btn.dataset.del)||{}).name +'」嗎?紀錄也會一併移除。')) return;
       const id = btn.dataset.del;
       state.habits = state.habits.filter(h=>h.id!==id);
       delete state.logs[id];
+      if(editingHabitId===id) exitEditMode();
       if(calSelectedHabit===id) calSelectedHabit = state.habits[0]?.id || null;
       if(statsSelectedHabit===id) statsSelectedHabit = state.habits[0]?.id || null;
       renderAll();
