@@ -68,6 +68,12 @@
   .hero .progress-line .pct{ font-size:13px; color: var(--ink-muted); }
   .hero .track{ height:4px; background: var(--border); border-radius:2px; margin-top:10px; overflow:hidden; }
   .hero .track .fill{ height:100%; background: var(--moss); border-radius:2px; transition: width .3s ease; }
+  .plant-legend{ margin-top:10px; }
+  .plant-legend summary{ font-size:12px; color: var(--ink-muted); cursor:pointer; text-decoration:underline; list-style:none; }
+  .plant-legend summary::-webkit-details-marker{ display:none; }
+  .plant-legend-body{ display:flex; gap:16px; margin-top:8px; }
+  .plant-legend-body span{ display:flex; align-items:center; gap:5px; font-size:12px; color: var(--ink-muted); }
+  .plant-legend-body svg{ width:18px; height:18px; color: var(--moss); }
 
   /* ---------- Habit row (today) ---------- */
   .habit-row{ display:flex; align-items:center; gap:12px; padding: 13px 4px; border-bottom: 1px solid var(--border); cursor:pointer; background:none; width:100%; text-align:left; }
@@ -84,6 +90,14 @@
   .habit-row .sub-line .amt{ font-weight:700; color: var(--ink); }
   .habit-row .quick-chips{ display:flex; gap:6px; margin-top:6px; flex-wrap:wrap; }
   .habit-row .quick-chips button{ background: var(--sage-dim); color:#3d5c33; border:none; border-radius:6px; padding:5px 10px; font-size:12.5px; font-weight:700; cursor:pointer; }
+  .expand-link{ background:none; border:none; color: var(--ink-muted); font-size:12px; text-decoration:underline; cursor:pointer; padding:0; margin-left:4px; }
+  .row-detail{ margin-top:8px; background: var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px 12px; }
+  .row-detail .detail-title{ font-size:11.5px; color: var(--ink-muted); font-weight:700; margin-bottom:6px; letter-spacing:0.5px; }
+  .row-detail .detail-line{ display:flex; justify-content:space-between; align-items:center; font-size:13px; padding:4px 0; }
+  .row-detail .detail-line.muted{ color: var(--ink-muted); }
+  .row-detail .del-entry{ background:none; border:none; color: var(--bloom); font-size:12px; text-decoration:underline; cursor:pointer; padding:0; }
+  .row-detail .add-entry-row{ display:flex; gap:6px; margin-top:8px; }
+  .add-entry-btn{ background: var(--moss-dim); color: var(--moss); border:none; border-radius:6px; padding:6px 12px; font-size:12.5px; font-weight:700; cursor:pointer; margin-top:6px; }
   .habit-row .check-mark{ width:20px; height:20px; flex-shrink:0; color: var(--border); }
   .habit-row.is-done .check-mark{ color: var(--moss); }
   .habit-row .skip-link{ font-size:11.5px; color: var(--ink-muted); text-decoration:underline; background:none; border:none; cursor:pointer; padding:0; flex-shrink:0; }
@@ -138,23 +152,25 @@
   .form-actions .ghost{ background:none; border:none; color: var(--ink-muted); font-size:13px; text-decoration:underline; cursor:pointer; }
 
   /* ---------- Records ---------- */
-  .stat-line{ font-size:14.5px; margin-bottom:16px; }
-  .stat-line b{ font-weight:900; color: var(--moss); }
-  .week-dots-row{ display:flex; align-items:center; justify-content:space-between; padding: 9px 2px; border-bottom:1px solid var(--border); }
-  .week-dots-row .name{ font-size:14px; font-weight:700; flex-shrink:0; width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .dots{ display:flex; gap:5px; }
-  .dot{ width:11px; height:11px; border-radius:50%; border:1.4px solid var(--sage); background:transparent; flex-shrink:0; }
-  .dot.done{ background: var(--moss); border-color: var(--moss); }
-  .dot.skipped{ background: var(--border); border-color: var(--border); }
-  .dot.faint{ border-color: var(--border); }
-  .week-dots-row .summary-txt{ font-size:12px; color: var(--ink-muted); flex-shrink:0; width:44px; text-align:right; font-weight:700; }
+  .week-table{ margin-bottom: 24px; }
+  .week-table-row{ display:flex; align-items:center; padding: 8px 2px; border-bottom:1px solid var(--border); }
+  .week-table-row.header{ border-bottom-color: var(--ink-muted); padding-bottom:6px; }
+  .wk-name{ font-size:13.5px; font-weight:700; flex-shrink:0; width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .wk-cols{ flex:1; display:grid; grid-template-columns: repeat(7,1fr); }
+  .wk-glyph{ text-align:center; font-size:15px; color: var(--border); }
+  .wk-glyph.lbl{ font-size:11.5px; color: var(--ink-muted); font-weight:700; }
+  .wk-glyph.done{ color: var(--moss); font-weight:900; }
+  .wk-glyph.miss{ color: var(--ink-muted); }
+  .wk-glyph.skip{ color: var(--soil); font-weight:900; }
 
   .habit-chips{ display:flex; gap:8px; overflow-x:auto; padding-bottom:8px; margin-bottom:14px; }
   .habit-chips button{ flex-shrink:0; border: 1px solid var(--border); background: var(--surface); padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight:600; color: var(--ink-muted); cursor:pointer; }
   .habit-chips button.active{ background: var(--moss); border-color: var(--moss); color:#fff; }
 
-  .dots-30{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom: 22px; }
-  .dots-30 .dot{ width:13px; height:13px; }
+  .day-detail-panel{ margin-top:14px; background: var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
+  .day-detail-date{ font-size:14.5px; font-weight:900; margin-bottom:8px; }
+  .day-detail-line{ display:flex; justify-content:space-between; font-size:14px; padding:5px 0; border-bottom:1px solid var(--border); }
+  .day-detail-line:last-child{ border-bottom:none; }
 
   .cal-nav{ display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom: 12px; }
   .cal-nav button{ background:none; border:none; color: var(--moss); font-size:18px; font-weight:900; cursor:pointer; line-height:1; padding:0 4px; }
@@ -162,8 +178,8 @@
   .cal-weekdays{ display:grid; grid-template-columns: repeat(7,1fr); margin-bottom:6px; }
   .cal-weekdays div{ text-align:center; font-size:11.5px; color: var(--ink-muted); font-weight:700; }
   .cal-days{ display:grid; grid-template-columns: repeat(7,1fr); gap:3px; }
-  .cal-cell{ aspect-ratio:1; display:flex; align-items:center; justify-content:center; font-size:12.5px; color: var(--ink-muted); border:1px solid var(--border); border-radius:6px; }
-  .cal-cell.pad{ border-color:transparent; }
+  .cal-cell{ aspect-ratio:1; display:flex; align-items:center; justify-content:center; font-size:12.5px; color: var(--ink-muted); border:1px solid var(--border); border-radius:6px; cursor:pointer; }
+  .cal-cell.pad{ border-color:transparent; cursor:default; }
   .cal-cell.done{ border-color: var(--moss); color: var(--moss); font-weight:900; }
   .cal-cell.partial{ border-color: var(--sage); color:#4b6a3f; }
   .cal-cell.skipped{ background: var(--border); border-color: var(--border); }
@@ -262,7 +278,8 @@ function defaultCategories(){
     {id:'life', label:'生活', disabled:false},
     {id:'work', label:'工作', disabled:false},
     {id:'relationship', label:'關係', disabled:false},
-    {id:'other', label:'其他', disabled:false}
+    {id:'other', label:'其他', disabled:false},
+    {id:'uncategorized', label:'未分類', disabled:false, protected:true}
   ];
 }
 function defaultTypeMeta(){
@@ -274,6 +291,13 @@ function defaultTypeMeta(){
     {key:'avoidance', label:'避免型', disabled:false}
   ];
 }
+const TYPE_DESC = {
+  boolean: '完成一次即可。',
+  quantity: '記錄數量,例如 2000 ml。',
+  duration: '記錄時間,例如 30 分鐘。',
+  count: '記錄次數,例如 3 次。',
+  avoidance: '記錄是否成功避免某件事。'
+};
 function getCategoryLabel(id){ const c = state.categories.find(x=>x.id===id); return c ? c.label : (id||'其他'); }
 function getTypeLabel(key){ const t = state.typeMeta.find(x=>x.key===key); return t ? t.label : key; }
 
@@ -317,6 +341,7 @@ function migrateState(raw){
   s.habits = Array.isArray(s.habits) ? s.habits : [];
   s.logs = s.logs && typeof s.logs === 'object' ? s.logs : {};
   s.categories = (Array.isArray(s.categories) && s.categories.length) ? s.categories : defaultCategories();
+  if(!s.categories.some(c=>c.id==='uncategorized')){ s.categories.push({id:'uncategorized', label:'未分類', disabled:false, protected:true}); }
   s.typeMeta = (Array.isArray(s.typeMeta) && s.typeMeta.length) ? s.typeMeta : defaultTypeMeta();
 
   // migrate logs first (needed to infer habit startDate from earliest log)
@@ -432,19 +457,18 @@ function calcAccumulation(habit, days){
   return { done, total };
 }
 function streakStage(streak){
-  if(streak >= 14) return 'flower';
-  if(streak >= 7) return 'leafy';
-  if(streak >= 3) return 'small';
-  if(streak >= 1) return 'sprout';
-  return 'seed';
+  if(streak >= 14) return 'milestone';
+  if(streak >= 7) return 'stable';
+  if(streak >= 1) return 'continuing';
+  return 'start';
 }
 const PLANT_ICONS = {
-  seed: `<svg viewBox="0 0 32 32" fill="none"><path d="M16 24c-5-2-8-8-4-14 3-4 8-5 11-2 3 5 0 11-4 14-1 1-2 2-3 2z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  sprout: `<svg viewBox="0 0 32 32" fill="none"><path d="M16 27V17" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M16 19c-2-1-6-1-7-5 4-1 7 1 7 5z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  small: `<svg viewBox="0 0 32 32" fill="none"><path d="M16 27V14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M16 20c-2-1-6-1-7-5 4-1 7 1 7 5z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 16c2-1 5-1 6-4-3-1-6 0-6 4z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  leafy: `<svg viewBox="0 0 32 32" fill="none"><path d="M16 28V12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M16 21c-2-1-6-1-7-5 4-1 7 1 7 5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 17c2-1 6-1 7-5-4-1-7 1-7 5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 13c-1.5-1-4-1-5-3.5 3-1 5 0.5 5 3.5z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  flower: `<svg viewBox="0 0 32 32" fill="none"><path d="M16 28V16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M16 20c-2-1-5-1-6-4 3-1 6 1 6 4z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><g stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M16 10c-2-2-2-5 0-6 2 1 2 4 0 6z"/><path d="M16 10c-2-2-2-5 0-6 2 1 2 4 0 6z" transform="rotate(72 16 10)"/><path d="M16 10c-2-2-2-5 0-6 2 1 2 4 0 6z" transform="rotate(144 16 10)"/><path d="M16 10c-2-2-2-5 0-6 2 1 2 4 0 6z" transform="rotate(216 16 10)"/><path d="M16 10c-2-2-2-5 0-6 2 1 2 4 0 6z" transform="rotate(288 16 10)"/></g><circle cx="16" cy="10" r="1.6" fill="currentColor"/></svg>`
+  start: `<svg viewBox="0 0 32 32" fill="none"><path d="M16 27V17" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M16 19c-2-1-6-1-7-5 4-1 7 1 7 5z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  continuing: `<svg viewBox="0 0 32 32" fill="none"><path d="M16 27V14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M16 20c-2-1-6-1-7-5 4-1 7 1 7 5z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 16c2-1 5-1 6-4-3-1-6 0-6 4z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  stable: `<svg viewBox="0 0 32 32" fill="none"><path d="M16 28V12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M16 21c-2-1-6-1-7-5 4-1 7 1 7 5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 17c2-1 6-1 7-5-4-1-7 1-7 5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 13c-1.5-1-4-1-5-3.5 3-1 5 0.5 5 3.5z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  milestone: `<svg viewBox="0 0 32 32" fill="none"><path d="M16 28V16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M16 20c-2-1-5-1-6-4 3-1 6 1 6 4z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><g stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M16 10c-2-2-2-5 0-6 2 1 2 4 0 6z"/><path d="M16 10c-2-2-2-5 0-6 2 1 2 4 0 6z" transform="rotate(72 16 10)"/><path d="M16 10c-2-2-2-5 0-6 2 1 2 4 0 6z" transform="rotate(144 16 10)"/><path d="M16 10c-2-2-2-5 0-6 2 1 2 4 0 6z" transform="rotate(216 16 10)"/><path d="M16 10c-2-2-2-5 0-6 2 1 2 4 0 6z" transform="rotate(288 16 10)"/></g><circle cx="16" cy="10" r="1.6" fill="currentColor"/></svg>`
 };
+const PLANT_LEGEND = [ {key:'start', label:'開始'}, {key:'continuing', label:'持續'}, {key:'stable', label:'穩定'}, {key:'milestone', label:'里程碑'} ];
 const CHECK_ICON = `<svg viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 /* ---------- Tabs ---------- */
@@ -460,6 +484,8 @@ document.querySelectorAll('nav.tabs button').forEach(btn=>{
 });
 
 /* ================= TODAY ================= */
+let expandedRows = new Set();
+
 function renderToday(){
   const el = document.getElementById('tab-today');
   const t = todayStr();
@@ -470,14 +496,13 @@ function renderToday(){
 
   const now = new Date();
   const dateMeta = now.getFullYear()+'/'+(now.getMonth()+1)+'/'+now.getDate()+'('+['日','一','二','三','四','五','六'][now.getDay()]+')';
-  const greetings = ['慢慢澆水就好。','花園不急,你也不用急。','照顧一點是一點。','今天想先照顧哪一株?'];
-  const greeting = greetings[now.getDate() % greetings.length];
+  const greeting = '今日習慣';
 
   let listHtml = '';
   if(active.length === 0){
     listHtml = `
       <div class="empty-state">
-        ${PLANT_ICONS.seed.replace('<svg ', '<svg class="logo-mark" ')}
+        ${PLANT_ICONS.start.replace('<svg ', '<svg class="logo-mark" ')}
         <h3>花園還是一片空地</h3>
         <p>新增一個習慣,讓它慢慢長大。</p>
         <button onclick="document.querySelector('[data-tab=settings]').click()">＋ 新增習慣</button>
@@ -494,13 +519,16 @@ function renderToday(){
       ${scheduledToday.length ? `
       <div class="progress-line"><span class="frac">${doneCount} / ${scheduledToday.length}</span><span class="pct">今天完成 ${pct}%</span></div>
       <div class="track"><div class="fill" style="width:${pct}%"></div></div>` : `<div class="pct" style="color:var(--ink-muted);font-size:13px;">今天沒有排定的習慣</div>`}
+      <details class="plant-legend"><summary>植物代表什麼?</summary>
+        <div class="plant-legend-body">${PLANT_LEGEND.map(p=>`<span>${PLANT_ICONS[p.key]}${p.label}</span>`).join('')}</div>
+      </details>
     </div>
     <div>${listHtml}</div>
   `;
 
   el.querySelectorAll('[data-row-toggle]').forEach(row=>{
     row.addEventListener('click', (e)=>{
-      if(e.target.closest('[data-skip]') || e.target.closest('[data-quick]') || e.target.closest('[data-manual-btn]') || e.target.closest('input')) return;
+      if(e.target.closest('[data-skip]') || e.target.closest('[data-quick]') || e.target.closest('[data-manual-btn]') || e.target.closest('[data-expand]') || e.target.closest('input')) return;
       toggleBooleanLike(row.dataset.rowToggle);
     });
   });
@@ -513,12 +541,28 @@ function renderToday(){
   el.querySelectorAll('[data-manual-btn]').forEach(btn=>{
     btn.addEventListener('click', (e)=>{
       e.stopPropagation();
-      const input = document.getElementById('manual-'+btn.dataset.manualBtn);
+      const input = document.getElementById('detail-manual-'+btn.dataset.manualBtn);
       const val = parseFloat(input.value);
       if(!isNaN(val) && val !== 0){ addAmount(btn.dataset.manualBtn, val); input.value=''; }
     });
   });
+  el.querySelectorAll('[data-expand]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const id = btn.dataset.expand;
+      if(expandedRows.has(id)) expandedRows.delete(id); else expandedRows.add(id);
+      renderToday();
+    });
+  });
+  el.querySelectorAll('[data-delentry]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{ e.stopPropagation(); deleteEntry(btn.dataset.delentry, parseInt(btn.dataset.idx)); });
+  });
+  el.querySelectorAll('[data-markdone]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{ e.stopPropagation(); toggleBooleanLike(btn.dataset.markdone); });
+  });
 }
+
+function fmtTime(ts){ const d = new Date(ts); return pad(d.getHours())+':'+pad(d.getMinutes()); }
 
 function renderTodayRow(h, t){
   const status = dayStatus(h, t);
@@ -527,6 +571,7 @@ function renderTodayRow(h, t){
   const isDoneCls = status === 'done' ? 'is-done' : '';
   const isSkipCls = status === 'skipped' ? 'is-skipped' : '';
   const isDim = (status === 'not_scheduled' || status === 'paused');
+  const expanded = expandedRows.has(h.id);
 
   if(isDim){
     return `
@@ -539,34 +584,49 @@ function renderTodayRow(h, t){
       </div>`;
   }
 
+  const log = getLog(h.id, t);
+
   if(h.type === 'boolean' || h.type === 'avoidance'){
+    const detail = expanded ? `
+      <div class="row-detail">
+        <div class="detail-title">今日紀錄</div>
+        ${ (status==='done' && log && log.doneAt) ? `<div class="detail-line"><span>${fmtTime(log.doneAt)}　完成</span></div>` : `<div class="detail-line muted">尚未記錄</div>` }
+        ${ status!=='done' ? `<button class="add-entry-btn" data-markdone="${h.id}">＋ 標記完成</button>` : '' }
+      </div>` : '';
     return `
       <div class="habit-row ${isDoneCls} ${isSkipCls}" data-row-toggle="${h.id}">
         <span class="plant-icon">${PLANT_ICONS[stage]}</span>
         <div class="info">
           <div class="name-line"><span class="name">${escapeHtml(h.name)}</span>${streak>0?`<span class="streak-txt">照顧 ${streak} 天</span>`:''}</div>
-          <div class="sub-line">${status==='skipped' ? '今天跳過' : (status==='done' ? '已完成' : '點一下完成')}</div>
+          <div class="sub-line">${status==='skipped' ? '今天跳過' : (status==='done' ? '已完成' : '點一下完成')} <button class="expand-link" data-expand="${h.id}">${expanded?'收合 ⌃':'明細 ⌄'}</button></div>
+          ${detail}
         </div>
         <button class="skip-link" data-skip="${h.id}">${status==='skipped'?'取消':'跳過'}</button>
         <span class="check-mark">${CHECK_ICON}</span>
       </div>`;
   }
 
-  const log = getLog(h.id, t);
   const amt = log ? (log.amount||0) : 0;
   const goal = effectiveGoal(h, t);
   const quickBtns = (h.quickAdds||[]).map(q=>`<button data-quick="${h.id}" data-amt="${q}">+${q}</button>`).join('');
+  const entries = (log && log.entries) || [];
+  const detail = expanded ? `
+    <div class="row-detail">
+      <div class="detail-title">今日紀錄</div>
+      ${ entries.length ? entries.map((en,i)=>`<div class="detail-line"><span>${fmtTime(en.ts)}　${en.amt} ${escapeHtml(h.unit||'')}</span><button class="del-entry" data-delentry="${h.id}" data-idx="${i}">刪除</button></div>`).join('') : `<div class="detail-line muted">尚未記錄</div>` }
+      <div class="add-entry-row">
+        <input type="number" placeholder="數量" id="detail-manual-${h.id}" style="width:70px;border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:12.5px;">
+        <button data-manual-btn="${h.id}" class="add-entry-btn">＋ 新增紀錄</button>
+      </div>
+    </div>` : '';
   return `
     <div class="habit-row ${isDoneCls} ${isSkipCls}">
       <span class="plant-icon">${PLANT_ICONS[stage]}</span>
       <div class="info">
         <div class="name-line"><span class="name">${escapeHtml(h.name)}</span>${streak>0?`<span class="streak-txt">照顧 ${streak} 天</span>`:''}</div>
-        <div class="sub-line"><span class="amt">${amt}</span> ${goal? '/ '+goal : ''} ${escapeHtml(h.unit||'')} ${status==='skipped'?' · 跳過':''}</div>
-        <div class="quick-chips">
-          ${quickBtns}
-          <input type="number" placeholder="其他" id="manual-${h.id}" style="width:60px;border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:12.5px;">
-          <button data-manual-btn="${h.id}" style="background:var(--moss-dim);color:var(--moss);border:none;border-radius:6px;padding:5px 10px;font-size:12.5px;font-weight:700;cursor:pointer;">加入</button>
-        </div>
+        <div class="sub-line"><span class="amt">${amt}</span> ${goal? '/ '+goal : ''} ${escapeHtml(h.unit||'')} ${status==='skipped'?' · 跳過':''} <button class="expand-link" data-expand="${h.id}">${expanded?'收合 ⌃':'明細 ⌄'}</button></div>
+        <div class="quick-chips">${quickBtns}</div>
+        ${detail}
       </div>
       <button class="skip-link" data-skip="${h.id}">${status==='skipped'?'取消':'跳過'}</button>
     </div>`;
@@ -577,15 +637,17 @@ async function toggleBooleanLike(habitId){
   if(!state.logs[habitId]) state.logs[habitId] = {};
   const cur = state.logs[habitId][t];
   const curStatus = cur ? cur.status : 'not_done';
-  state.logs[habitId][t] = { status: (curStatus==='done'?'not_done':'done'), amount:0, entries: [] };
+  const newStatus = curStatus==='done' ? 'not_done' : 'done';
+  state.logs[habitId][t] = { status: newStatus, amount:0, entries: [], doneAt: newStatus==='done' ? Date.now() : null };
   renderToday();
   await saveState();
 }
 async function toggleSkip(habitId){
   const t = todayStr();
   if(!state.logs[habitId]) state.logs[habitId] = {};
-  const cur = state.logs[habitId][t];
-  state.logs[habitId][t] = (cur && cur.status==='skipped') ? { status:'not_done', amount:0, entries:[] } : { status:'skipped', amount:0, entries:[] };
+  const cur = state.logs[habitId][t] || { status:'not_done', amount:0, entries:[] };
+  cur.status = (cur.status === 'skipped') ? 'not_done' : 'skipped';
+  state.logs[habitId][t] = cur;
   renderToday();
   await saveState();
 }
@@ -601,6 +663,15 @@ async function addAmount(habitId, amount){
   renderToday();
   await saveState();
 }
+async function deleteEntry(habitId, idx){
+  const t = todayStr();
+  const log = state.logs[habitId] && state.logs[habitId][t];
+  if(!log || !log.entries || !log.entries[idx]) return;
+  log.entries.splice(idx, 1);
+  log.amount = log.entries.reduce((sum,e)=>sum+(e.amt||0), 0);
+  renderToday();
+  await saveState();
+}
 
 /* ================= RECORDS ================= */
 function renderRecords(){
@@ -610,20 +681,25 @@ function renderRecords(){
     return;
   }
   el.innerHTML = `
-    <div class="stat-line" id="weekStat"></div>
-    <div id="weekDotsBlock"></div>
-    <div class="section-label">個別習慣</div>
+    <div class="week-table" id="weekTable"></div>
+    <div class="section-label">歷史紀錄</div>
     <div class="habit-chips" id="recHabitChips"></div>
-    <div id="dots30Host"></div>
     <div class="cal-nav"><button id="calPrev">‹</button><div class="label" id="calLabel">—</div><button id="calNext">›</button></div>
     <div><div class="cal-weekdays"><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div><div>日</div></div><div class="cal-days" id="calDays"></div></div>
+    <div id="dayDetailHost"></div>
   `;
   renderWeekBlock();
   renderRecHabitChips();
-  renderDots30();
   renderCalendar();
-  document.getElementById('calPrev').addEventListener('click', ()=>{ calCursor.setMonth(calCursor.getMonth()-1); renderCalendar(); });
-  document.getElementById('calNext').addEventListener('click', ()=>{ calCursor.setMonth(calCursor.getMonth()+1); renderCalendar(); });
+  document.getElementById('calPrev').addEventListener('click', ()=>{ calCursor.setMonth(calCursor.getMonth()-1); renderCalendar(); document.getElementById('dayDetailHost').innerHTML=''; });
+  document.getElementById('calNext').addEventListener('click', ()=>{ calCursor.setMonth(calCursor.getMonth()+1); renderCalendar(); document.getElementById('dayDetailHost').innerHTML=''; });
+}
+
+function weekGlyph(status){
+  if(status==='done') return '<span class="wk-glyph done">●</span>';
+  if(status==='skipped') return '<span class="wk-glyph skip">—</span>';
+  if(status==='not_done') return '<span class="wk-glyph miss">○</span>';
+  return '<span class="wk-glyph"></span>'; // not_scheduled / paused / future / before start
 }
 
 function renderWeekBlock(){
@@ -631,25 +707,20 @@ function renderWeekBlock(){
   const dow = (today.getDay()+6)%7;
   const monday = new Date(today); monday.setDate(today.getDate()-dow);
   const weekDates = []; for(let i=0;i<7;i++){ const d=new Date(monday); d.setDate(monday.getDate()+i); weekDates.push(d); }
+  const WD_LABELS = ['一','二','三','四','五','六','日'];
 
   const activeHabits = state.habits.filter(h=>h.status!=='archived');
-  let totalDone=0, totalScheduled=0;
+  const headerRow = `<div class="week-table-row header"><div class="wk-name"></div><div class="wk-cols">${WD_LABELS.map(l=>`<span class="wk-glyph lbl">${l}</span>`).join('')}</div></div>`;
   const rows = activeHabits.map(h=>{
-    let done=0, dotsHtml='';
-    weekDates.forEach(d=>{
+    const glyphs = weekDates.map(d=>{
       const ds = fmt(d);
-      if(d>today || ds < h.startDate){ dotsHtml += `<span class="dot faint"></span>`; return; }
-      const s = dayStatus(h, ds);
-      if(s==='done'){ dotsHtml += `<span class="dot done"></span>`; done++; totalDone++; totalScheduled++; }
-      else if(s==='skipped'){ dotsHtml += `<span class="dot skipped"></span>`; }
-      else if(passiveStatus(s)){ dotsHtml += `<span class="dot faint"></span>`; }
-      else { dotsHtml += `<span class="dot"></span>`; totalScheduled++; }
-    });
-    return `<div class="week-dots-row"><div class="name">${escapeHtml(h.name)}</div><div class="dots">${dotsHtml}</div><div class="summary-txt">${done}/7</div></div>`;
+      if(d>today || ds < h.startDate) return weekGlyph('na');
+      return weekGlyph(dayStatus(h, ds));
+    }).join('');
+    return `<div class="week-table-row"><div class="wk-name">${escapeHtml(h.name)}</div><div class="wk-cols">${glyphs}</div></div>`;
   }).join('');
 
-  document.getElementById('weekDotsBlock').innerHTML = rows || '<div style="color:var(--ink-muted);font-size:14px;">還沒有習慣</div>';
-  document.getElementById('weekStat').innerHTML = totalScheduled ? `本週 <b>${totalDone}/${totalScheduled}</b> 次` : `本週還沒有紀錄`;
+  document.getElementById('weekTable').innerHTML = headerRow + (rows || '<div style="color:var(--ink-muted);font-size:14px;padding:8px 2px;">還沒有習慣</div>');
 }
 
 function renderRecHabitChips(){
@@ -660,29 +731,10 @@ function renderRecHabitChips(){
     btn.addEventListener('click', ()=>{
       recordsSelectedHabit = btn.dataset.h;
       wrap.querySelectorAll('button').forEach(b=>b.classList.toggle('active', b===btn));
-      renderDots30(); renderCalendar();
+      renderCalendar();
+      document.getElementById('dayDetailHost').innerHTML = '';
     });
   });
-}
-
-function renderDots30(){
-  const habit = state.habits.find(h=>h.id===recordsSelectedHabit);
-  const host = document.getElementById('dots30Host');
-  if(!habit){ host.innerHTML=''; return; }
-  const acc = calcAccumulation(habit, 30);
-  const today = new Date();
-  let dotsHtml = '';
-  for(let i=29;i>=0;i--){
-    const d = new Date(today); d.setDate(today.getDate()-i);
-    const ds = fmt(d);
-    if(ds < habit.startDate){ dotsHtml += `<span class="dot faint"></span>`; continue; }
-    const s = dayStatus(habit, ds);
-    if(s==='done') dotsHtml += `<span class="dot done"></span>`;
-    else if(s==='skipped') dotsHtml += `<span class="dot skipped"></span>`;
-    else if(passiveStatus(s)) dotsHtml += `<span class="dot faint"></span>`;
-    else dotsHtml += `<span class="dot"></span>`;
-  }
-  host.innerHTML = `<div class="stat-line">${escapeHtml(habit.name)} 30 天 <b>${acc.done}/${acc.total}</b></div><div class="dots-30">${dotsHtml}</div>`;
 }
 
 function renderCalendar(){
@@ -709,9 +761,36 @@ function renderCalendar(){
       if(s==='done') cls='done'; else if(s==='partial') cls='partial'; else if(s==='skipped') cls='skipped';
     }
     if(ds === t) cls += ' today';
-    html += `<div class="cal-cell ${cls}">${d}</div>`;
+    html += `<div class="cal-cell ${cls}" data-day="${ds}">${d}</div>`;
   }
   daysEl.innerHTML = html;
+  daysEl.querySelectorAll('.cal-cell[data-day]').forEach(cell=>{
+    cell.addEventListener('click', ()=> showDayDetail(cell.dataset.day));
+  });
+}
+
+function showDayDetail(ds){
+  const host = document.getElementById('dayDetailHost');
+  const d = parseDate(ds);
+  const relevant = state.habits.filter(h => h.status!=='archived' && ds >= h.startDate && !isPausedOn(h,ds) && isExecutionDay(h,ds));
+  const lines = relevant.map(h=>{
+    const s = dayStatus(h, ds);
+    let valueTxt;
+    if(s==='skipped') valueTxt = '已跳過';
+    else if(h.type==='boolean' || h.type==='avoidance') valueTxt = s==='done' ? '✓ 完成' : '未完成';
+    else{
+      const log = getLog(h.id, ds);
+      const amt = log ? (log.amount||0) : 0;
+      const goal = effectiveGoal(h, ds);
+      valueTxt = amt + (goal? ' / '+goal : '') + ' ' + (h.unit||'') + (s==='done'?' ✓':'');
+    }
+    return `<div class="day-detail-line"><span>${escapeHtml(h.name)}</span><span>${valueTxt}</span></div>`;
+  }).join('');
+  host.innerHTML = `
+    <div class="day-detail-panel">
+      <div class="day-detail-date">${d.getMonth()+1} / ${d.getDate()}</div>
+      ${lines || '<div class="day-detail-line" style="color:var(--ink-muted);">這天沒有排定的習慣</div>'}
+    </div>`;
 }
 
 /* ================= SETTINGS ================= */
@@ -759,11 +838,10 @@ function renderSettings(){
 function habitManageRowHtml(h){
   const goal = h.configHistory && h.configHistory.length ? h.configHistory[h.configHistory.length-1].goal : null;
   const days = (!h.executionDays || h.executionDays.length===0) ? '每天' : WEEKDAY_CHECKS.filter(w=>h.executionDays.includes(w.val)).map(w=>w.label).join('');
-  const metaBits = [getTypeLabel(h.type)];
-  if(h.unit) metaBits.push(h.unit);
-  if(goal) metaBits.push('目標 '+goal);
+  const metaBits = [];
+  if(goal !== null && goal !== undefined) metaBits.push(goal + (h.unit ? ' '+h.unit : ''));
+  else if(h.unit) metaBits.push(h.unit);
   metaBits.push(days);
-  metaBits.push(getCategoryLabel(h.category));
 
   let actions = '';
   if(h.status === 'active'){
@@ -907,17 +985,19 @@ function showHabitForm(habit){
   });
 }
 
-/* ---- Type management (rename / disable / reorder only — behavior is code-defined) ---- */
+/* ---- Type management (rename / disable / reorder / delete — behavior is code-defined) ---- */
+function countHabitsUsingType(key){ return state.habits.filter(h=>h.type===key).length; }
 function renderTypeList(){
   const host = document.getElementById('typeList');
   host.innerHTML = state.typeMeta.map((t,i)=>`
     <div class="manage-row ${t.disabled?'disabled':''}">
-      <div class="info"><b>${escapeHtml(t.label)}</b></div>
+      <div class="info"><b>${escapeHtml(t.label)}</b><div class="meta-line">${escapeHtml(TYPE_DESC[t.key]||'')}</div></div>
       <div class="link-actions">
         ${i>0?`<button class="muted" data-tup="${t.key}">↑</button>`:''}
         ${i<state.typeMeta.length-1?`<button class="muted" data-tdown="${t.key}">↓</button>`:''}
         <button data-trename="${t.key}">重新命名</button>
         <button class="muted" data-ttoggle="${t.key}">${t.disabled?'啟用':'停用'}</button>
+        <button class="danger" data-tdelete="${t.key}">刪除</button>
       </div>
     </div>`).join('');
 
@@ -939,9 +1019,21 @@ function renderTypeList(){
     const i = state.typeMeta.findIndex(x=>x.key===b.dataset.tdown);
     if(i<state.typeMeta.length-1){ [state.typeMeta[i+1],state.typeMeta[i]]=[state.typeMeta[i],state.typeMeta[i+1]]; renderSettings(); await saveState(); }
   }));
+  host.querySelectorAll('[data-tdelete]').forEach(b=>b.addEventListener('click', async ()=>{
+    const key = b.dataset.tdelete;
+    const count = countHabitsUsingType(key);
+    if(count > 0){
+      alert(`目前有 ${count} 個習慣使用「${getTypeLabel(key)}」,請先把它們改成其他類型,才能刪除。`);
+      return;
+    }
+    if(!confirm(`刪除「${getTypeLabel(key)}」這個類型?`)) return;
+    state.typeMeta = state.typeMeta.filter(x=>x.key!==key);
+    renderSettings(); await saveState();
+  }));
 }
 
-/* ---- Category management (full CRUD) ---- */
+/* ---- Category management (full CRUD, safe delete) ---- */
+function countHabitsUsingCategory(id){ return state.habits.filter(h=>h.category===id).length; }
 async function addCategory(){
   const val = prompt('新分類名稱');
   if(!val || !val.trim()) return;
@@ -958,6 +1050,7 @@ function renderCategoryList(){
         ${i<state.categories.length-1?`<button class="muted" data-cdown="${c.id}">↓</button>`:''}
         <button data-crename="${c.id}">重新命名</button>
         <button class="muted" data-ctoggle="${c.id}">${c.disabled?'啟用':'停用'}</button>
+        ${c.protected? '' : `<button class="danger" data-cdelete="${c.id}">刪除</button>`}
       </div>
     </div>`).join('');
 
@@ -978,6 +1071,19 @@ function renderCategoryList(){
   host.querySelectorAll('[data-cdown]').forEach(b=>b.addEventListener('click', async ()=>{
     const i = state.categories.findIndex(x=>x.id===b.dataset.cdown);
     if(i<state.categories.length-1){ [state.categories[i+1],state.categories[i]]=[state.categories[i],state.categories[i+1]]; renderSettings(); await saveState(); }
+  }));
+  host.querySelectorAll('[data-cdelete]').forEach(b=>b.addEventListener('click', async ()=>{
+    const id = b.dataset.cdelete;
+    const c = state.categories.find(x=>x.id===id);
+    const count = countHabitsUsingCategory(id);
+    if(count > 0){
+      if(!confirm(`「${c.label}」目前有 ${count} 個習慣使用,刪除後這些習慣會改為「未分類」,確定要刪除嗎?`)) return;
+      state.habits.forEach(h=>{ if(h.category===id) h.category='uncategorized'; });
+    }else{
+      if(!confirm(`刪除「${c.label}」這個分類?`)) return;
+    }
+    state.categories = state.categories.filter(x=>x.id!==id);
+    renderSettings(); renderAll(); await saveState();
   }));
 }
 
