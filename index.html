@@ -2,8 +2,11 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#FFC53D">
 <title>習慣花園</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='11' fill='%23FFC53D'/%3E%3Ccircle cx='15' cy='19' r='3' fill='%232E2A22'/%3E%3Ccircle cx='25' cy='19' r='3' fill='%232E2A22'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%23FFC53D'/%3E%3Ccircle cx='68' cy='86' r='13' fill='%232E2A22'/%3E%3Ccircle cx='112' cy='86' r='13' fill='%232E2A22'/%3E%3C/svg%3E">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
 
@@ -26,18 +29,29 @@
     --lilac-dim: #EFEBFA;
     --border: #EFE9D8;
   }
-  *{ box-sizing:border-box; }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+  html{ height:100%; }
   body{
-    margin:0; min-height:100vh; background: var(--paper); color: var(--ink);
+    margin:0; min-height:100vh; min-height:100dvh; background: var(--paper); color: var(--ink);
     font-family: 'Noto Sans TC', sans-serif; font-size: 16.5px; line-height: 1.5;
-    padding-bottom: 60px; -webkit-font-smoothing: antialiased;
+    padding-bottom: 60px;
+    padding-bottom: max(60px, env(safe-area-inset-bottom, 60px));
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
   a{ color:inherit; }
-  button{ font-family:inherit; }
+  button{ font-family:inherit; -webkit-appearance:none; appearance:none; }
+  input, select, textarea{ font-size:16px; } /* prevent iOS Safari auto-zoom on focus */
+
+  /* ---------- Brand mark (the Spot) ---------- */
+  .spot{ border-radius:50%; background: var(--sun); position:relative; flex-shrink:0; }
+  .spot::before, .spot::after{ content:''; position:absolute; top:44%; width:16%; height:16%; border-radius:50%; background: var(--ink); }
+  .spot::before{ left:28%; }
+  .spot::after{ right:28%; }
 
   /* ---------- Login ---------- */
-  #loginScreen{ min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding: 24px; text-align:center; }
-  #loginScreen .scene{ width:120px; height:120px; margin-bottom:18px; }
+  #loginScreen{ min-height:100vh; min-height:100dvh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding: 24px; text-align:center; }
+  #loginScreen .spot-lg{ width:96px; height:96px; margin-bottom:20px; }
   #loginScreen h1{ font-size:30px; font-weight:900; margin: 0 0 8px; }
   #loginScreen p{ color: var(--ink-muted); margin: 0 0 30px; font-size:15px; max-width:280px; line-height:1.6; }
   #googleBtn{ display:flex; align-items:center; gap:10px; background: var(--surface); border: 2px solid var(--border); border-radius: 14px; padding: 13px 24px; font-size: 15px; font-weight:700; color: var(--ink); cursor:pointer; }
@@ -49,7 +63,7 @@
   #app[hidden]{ display:none; }
   header.top{ display:flex; align-items:center; justify-content:space-between; margin-bottom: 20px; }
   header.top .brand{ display:flex; align-items:center; gap:9px; }
-  header.top .brand .mark{ width:26px; height:26px; color: var(--moss); }
+  header.top .brand .spot{ width:26px; height:26px; }
   header.top .brand h1{ font-size:18px; font-weight:900; margin:0; }
   header.top .user{ display:flex; align-items:center; gap:9px; }
   header.top .user img{ width:28px; height:28px; border-radius:50%; }
@@ -57,28 +71,25 @@
 
   nav.tabs{ display:flex; gap: 22px; border-bottom: 2px solid var(--border); margin-bottom: 24px; }
   nav.tabs button{ border:none; background:transparent; padding: 0 2px 11px; font-size: 15px; font-weight:700; color: var(--ink-muted); cursor:pointer; border-bottom: 3px solid transparent; margin-bottom:-2px; }
-  nav.tabs button.active{ color: var(--ink); border-bottom-color: var(--moss); }
+  nav.tabs button.active{ color: var(--ink); border-bottom-color: var(--sun); }
 
   section.tab{ display:none; }
-  section.tab.active{ display:block; animation: fade .15s ease; }
-  @keyframes fade{ from{opacity:0;} to{opacity:1;} }
+  section.tab.active{ display:block; }
 
-  /* ---------- Hero (storybook scene) ---------- */
-  .hero{ margin-bottom: 24px; background: var(--moss-dim); border-radius: 22px; padding: 20px 22px; position:relative; overflow:hidden; }
-  .hero .scene-deco{ position:absolute; right:-6px; bottom:-10px; width:96px; height:96px; opacity:0.9; }
-  .hero .date-meta{ font-size:13px; letter-spacing:1px; color:#3d7a52; font-weight:700; margin-bottom:6px; }
-  .hero .progress-line{ position:relative; z-index:1; }
+  /* ---------- Hero ---------- */
+  .hero{ margin-bottom: 24px; background: var(--sun-dim); border-radius: 22px; padding: 20px 22px; position:relative; overflow:hidden; }
+  .hero .spot{ position:absolute; right:18px; top:18px; width:34px; height:34px; }
+  .hero .date-meta{ font-size:13px; letter-spacing:1px; color:#9a6a00; font-weight:700; margin-bottom:6px; }
   .hero .progress-line .frac{ font-weight:900; font-size:42px; color: var(--ink); letter-spacing:-0.5px; }
   .hero .progress-line .frac .of{ font-size:20px; color: var(--ink-muted); font-weight:700; }
-  .hero .track{ height:8px; background: rgba(255,255,255,0.6); border-radius:999px; margin-top:12px; overflow:hidden; max-width:70%; position:relative; z-index:1; }
-  .hero .track .fill{ height:100%; background: var(--moss); border-radius:999px; transition: width .3s ease; }
+  .hero .track{ height:8px; background: rgba(255,255,255,0.7); border-radius:999px; margin-top:12px; overflow:hidden; max-width:70%; }
+  .hero .track .fill{ height:100%; background: var(--sun); border-radius:999px; transition: width .3s ease; }
 
   /* ---------- Habit row (today) ---------- */
   .habit-row{ display:flex; align-items:center; gap:14px; padding: 16px 4px; border-bottom: 1px solid var(--border); position:relative; }
   .habit-row:last-child{ border-bottom:none; }
   .habit-row.dim{ opacity:0.45; }
-  .habit-row .badge{ width:38px; height:38px; border-radius:12px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
-  .habit-row .badge svg{ width:20px; height:20px; color:#fff; }
+  .habit-row .badge{ width:14px; height:14px; border-radius:50%; flex-shrink:0; margin-left:4px; }
   .habit-row .info{ flex:1; min-width:0; display:flex; align-items:center; gap:8px; cursor:pointer; }
   .habit-row .name{ font-weight:700; font-size:17px; }
   .habit-row.is-done .name{ color: var(--moss); }
@@ -92,65 +103,65 @@
 
   /* icon buttons (skip / expand / delete / add) */
   .row-actions{ display:flex; align-items:center; gap:2px; flex-shrink:0; margin-left:auto; }
-  .icon-btn{ width:30px; height:30px; border:none; background:none; color: var(--ink-muted); opacity:0.55; cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:8px; padding:0; }
-  .icon-btn:hover{ opacity:1; background: var(--moss-dim); }
+  .icon-btn{ width:34px; height:34px; border:none; background:none; color: var(--ink-muted); opacity:0.55; cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:8px; padding:0; }
+  .icon-btn:active{ opacity:1; background: var(--sun-dim); }
   .icon-btn svg{ width:16px; height:16px; }
   .skip-btn svg{ width:14px; height:14px; }
   .expand-btn svg{ transition: transform .15s ease; }
   .expand-btn.open svg{ transform: rotate(180deg); }
 
-  .icon-text-btn{ display:inline-flex; align-items:center; gap:5px; background: var(--moss-dim); color: var(--moss); border:none; border-radius:8px; padding:7px 13px; font-size:12.5px; font-weight:700; cursor:pointer; margin-top:6px; }
+  .icon-text-btn{ display:inline-flex; align-items:center; gap:5px; background: var(--sun-dim); color:#8a5c00; border:none; border-radius:8px; padding:8px 13px; font-size:12.5px; font-weight:700; cursor:pointer; margin-top:6px; }
   .icon-text-btn svg{ width:13px; height:13px; }
 
   .row-detail{ margin-top:10px; padding-top:10px; border-top:1px dashed var(--border); flex-basis:100%; }
-  .row-detail .detail-line{ display:flex; justify-content:space-between; align-items:center; font-size:13.5px; padding:5px 0; }
+  .row-detail .detail-line{ display:flex; justify-content:space-between; align-items:center; font-size:13.5px; padding:6px 0; }
   .row-detail .detail-line.muted{ color: var(--ink-muted); }
   .row-detail .add-entry-row{ display:flex; gap:6px; margin-top:6px; align-items:center; }
-  .row-detail .add-entry-row input{ width:72px; border:1px solid var(--border); border-radius:8px; padding:6px 8px; font-size:13px; background:var(--paper); }
+  .row-detail .add-entry-row input{ width:78px; border:1px solid var(--border); border-radius:8px; padding:8px; background:var(--paper); }
   .row-detail .add-entry-row .icon-text-btn{ margin-top:0; }
 
   /* quantity-type row layout */
   .habit-row.qty-row{ flex-wrap:wrap; align-items:flex-start; }
   .qty-top{ display:flex; align-items:center; width:100%; gap:10px; }
   .qty-top .info{ cursor:default; }
-  .qty-progress{ width:100%; font-size:27px; font-weight:900; color: var(--ink); margin-top:6px; display:flex; align-items:baseline; gap:5px; padding-left:52px; }
+  .qty-progress{ width:100%; font-size:27px; font-weight:900; color: var(--ink); margin-top:6px; display:flex; align-items:baseline; gap:5px; padding-left:28px; }
   .qty-progress .goal{ font-size:16px; font-weight:700; color: var(--ink-muted); }
   .qty-progress .unit{ font-size:14px; font-weight:600; color: var(--ink-muted); }
   .qty-progress .mini-check{ width:18px; height:18px; color: var(--moss); }
   .qty-progress .mini-check svg{ width:100%; height:100%; }
   .habit-row.qty-row.is-done .qty-progress .amt{ color: var(--moss); }
-  .quick-chips{ display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; width:100%; padding-left:52px; }
-  .quick-chips button{ background: var(--sun-dim); color:#8a5c00; border:none; border-radius:8px; padding:6px 12px; font-size:13px; font-weight:700; cursor:pointer; }
+  .quick-chips{ display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; width:100%; padding-left:28px; }
+  .quick-chips button{ background: var(--sky-dim); color:#276a8c; border:none; border-radius:8px; padding:7px 13px; font-size:13px; font-weight:700; cursor:pointer; }
 
   .empty-state{ text-align:center; padding: 56px 20px; color: var(--ink-muted); }
-  .empty-state .scene{ width:100px; height:100px; margin-bottom:14px; }
+  .empty-state .spot-lg{ width:80px; height:80px; margin: 0 auto 16px; }
   .empty-state h3{ font-size:17px; color: var(--ink); font-weight:900; margin:0 0 6px; }
   .empty-state p{ font-size:14px; margin:0 0 16px; }
-  .empty-state button{ background: var(--moss); color:#fff; border:none; border-radius:12px; padding:11px 22px; font-weight:700; font-size:14px; cursor:pointer; }
+  .empty-state button{ background: var(--ink); color:#fff; border:none; border-radius:12px; padding:11px 22px; font-weight:700; font-size:14px; cursor:pointer; }
 
   /* ---------- Generic manage list row ---------- */
   .section-label{ font-size:12px; letter-spacing:1px; color:var(--ink-muted); font-weight:900; margin: 24px 0 10px; }
   .section-label:first-child{ margin-top:0; }
-  .manage-row{ padding: 11px 2px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; gap:10px; }
+  .manage-row{ padding: 12px 2px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; gap:10px; }
   .manage-row .info b{ font-size:15px; font-weight:700; }
   .manage-row .info .meta-line{ font-size:12px; color: var(--ink-muted); margin-top:2px; }
   .manage-row.disabled .info b{ color: var(--ink-muted); text-decoration: line-through; }
-  .manage-row .link-actions{ display:flex; gap:11px; flex-shrink:0; }
-  .manage-row .link-actions button{ background:none; border:none; font-size:12.5px; color: var(--moss); text-decoration:underline; cursor:pointer; padding:0; font-weight:600; }
+  .manage-row .link-actions{ display:flex; gap:12px; flex-shrink:0; flex-wrap:wrap; justify-content:flex-end; }
+  .manage-row .link-actions button{ background:none; border:none; font-size:12.5px; color: var(--moss); text-decoration:underline; cursor:pointer; padding:2px 0; font-weight:600; }
   .manage-row .link-actions button.muted{ color: var(--ink-muted); }
   .manage-row .link-actions button.danger{ color: var(--berry); }
 
   .add-btn-row{ margin-bottom: 6px; }
-  .add-btn-row button{ background: var(--moss); color:#fff; border:none; border-radius:12px; padding: 10px 16px; font-weight:700; font-size:14px; cursor:pointer; }
-  .add-btn-row.small button{ background: var(--surface); border:2px solid var(--border); color: var(--ink); padding:8px 14px; font-size:13px; }
+  .add-btn-row button{ background: var(--ink); color:#fff; border:none; border-radius:12px; padding: 11px 16px; font-weight:700; font-size:14px; cursor:pointer; }
+  .add-btn-row.small button{ background: var(--surface); border:2px solid var(--border); color: var(--ink); padding:9px 14px; font-size:13px; }
 
   /* ---------- Form ---------- */
   .form-panel{ background: var(--surface); border:2px solid var(--border); border-radius: 18px; padding: 16px; margin-bottom: 18px; }
   .form-panel h3{ font-size:16px; font-weight:900; margin:0 0 12px; }
   .field{ margin-bottom: 12px; }
   .field label{ display:block; font-size:12.5px; color: var(--ink-muted); margin-bottom:5px; font-weight:700; }
-  .field input, .field select, .field textarea{ width:100%; border:1.5px solid var(--border); border-radius:10px; padding: 10px 11px; font-size:15px; outline:none; font-family:'Noto Sans TC',sans-serif; background: var(--paper); }
-  .field input:focus, .field select:focus, .field textarea:focus{ border-color: var(--moss); }
+  .field input, .field select, .field textarea{ width:100%; border:1.5px solid var(--border); border-radius:10px; padding: 11px; outline:none; font-family:'Noto Sans TC',sans-serif; background: var(--paper); }
+  .field input:focus, .field select:focus, .field textarea:focus{ border-color: var(--sun); }
   .field textarea{ resize:vertical; min-height:52px; }
   .field-row{ display:flex; gap:10px; }
   .field-row .field{ flex:1; }
@@ -159,49 +170,40 @@
   .daypick{ display:flex; gap:6px; }
   .daypick label{ flex:1; text-align:center; }
   .daypick input{ display:none; }
-  .daypick span{ display:block; padding:8px 0; border:1.5px solid var(--border); border-radius:8px; font-size:12.5px; color: var(--ink-muted); cursor:pointer; }
-  .daypick input:checked + span{ background: var(--moss-dim); border-color: var(--moss); color: var(--moss); font-weight:700; }
+  .daypick span{ display:block; padding:9px 0; border:1.5px solid var(--border); border-radius:8px; font-size:12.5px; color: var(--ink-muted); cursor:pointer; }
+  .daypick .dc-on span{ background: var(--sun-dim); border-color: var(--sun); color:#8a5c00; font-weight:700; }
 
   details.adv{ margin-bottom: 12px; }
-  details.adv summary{ font-size:13px; color: var(--moss); cursor:pointer; font-weight:700; padding:6px 0; }
+  details.adv summary{ font-size:13px; color: var(--moss); cursor:pointer; font-weight:700; padding:8px 0; }
   details.adv .adv-body{ padding-top:8px; }
 
   .type-picker{ display:flex; flex-direction:column; gap:7px; }
-  .type-option{ display:flex; align-items:flex-start; gap:10px; border:1.5px solid var(--border); border-radius:12px; padding:10px 12px; cursor:pointer; }
-  .type-option input{ width:auto; margin-top:3px; accent-color: var(--moss); }
+  .type-option{ display:flex; align-items:flex-start; gap:10px; border:1.5px solid var(--border); border-radius:12px; padding:11px 12px; cursor:pointer; }
+  .type-option.tp-checked{ border-color: var(--sun); background: var(--sun-dim); }
+  .type-option input{ width:auto; margin-top:3px; accent-color: var(--sun); }
   .type-option div{ display:flex; flex-direction:column; gap:2px; }
   .type-option b{ font-size:14px; }
   .type-option span{ font-size:12.5px; color: var(--ink-muted); }
-  .type-option:has(input:checked){ border-color: var(--moss); background: var(--moss-dim); }
 
   .form-actions{ display:flex; gap:10px; margin-top:4px; }
-  .form-actions .primary{ flex:1; background: var(--moss); color:#fff; border:none; border-radius:10px; padding:11px; font-weight:700; font-size:14.5px; cursor:pointer; }
+  .form-actions .primary{ flex:1; background: var(--ink); color:#fff; border:none; border-radius:10px; padding:12px; font-weight:700; font-size:14.5px; cursor:pointer; }
   .form-actions .ghost{ background:none; border:none; color: var(--ink-muted); font-size:13px; text-decoration:underline; cursor:pointer; }
 
-  /* ---------- Records: Weekly Overview matrix ---------- */
+  /* ---------- Records: Dashboard first ---------- */
   .record-heading{ font-size:20px; font-weight:900; margin:2px 0 2px; }
-  .record-subheading{ font-size:13px; color: var(--ink-muted); margin-bottom:16px; }
-  .week-table{ margin-bottom: 22px; }
-  .week-table-row{ display:flex; align-items:center; padding: 9px 2px; border-bottom:1px solid var(--border); }
-  .week-table-row.header{ border-bottom-color: var(--ink-muted); padding-bottom:6px; }
-  .wk-name{ font-size:13.5px; font-weight:700; flex-shrink:0; width:88px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .wk-cols{ flex:1; display:grid; grid-template-columns: repeat(7,1fr); }
-  .wk-glyph{ text-align:center; font-size:15px; color: var(--border); }
-  .wk-glyph.lbl{ font-size:11.5px; color: var(--ink-muted); font-weight:700; }
-  .wk-glyph.done{ color: var(--moss); font-weight:900; }
-  .wk-glyph.miss{ color: var(--ink-muted); }
-  .wk-glyph.skip{ color: var(--coral); font-weight:900; }
+  .record-subheading{ font-size:13px; color: var(--ink-muted); margin-bottom:18px; }
 
-  /* ---------- Records: storybook stat dashboard ---------- */
-  .stat-hero{ margin-bottom:8px; }
-  .stat-hero .num{ font-size:52px; font-weight:900; color: var(--moss); letter-spacing:-1px; line-height:1; }
-  .stat-hero .cap{ font-size:14.5px; color: var(--ink-muted); margin-top:4px; }
-  .stat-hero .delta{ font-size:13px; font-weight:700; margin-top:6px; display:inline-block; padding:3px 10px; border-radius:999px; }
-  .stat-hero .delta.up{ background: var(--moss-dim); color: var(--moss); }
-  .stat-hero .delta.down{ background: var(--coral-dim); color: var(--coral); }
-  .stat-hero .delta.flat{ background: var(--border); color: var(--ink-muted); }
+  .dash-card{ background: var(--sun-dim); border-radius: 22px; padding: 22px 24px; margin-bottom:18px; position:relative; overflow:hidden; }
+  .dash-card .spot{ position:absolute; right:18px; top:18px; width:28px; height:28px; }
+  .dash-card .cap{ font-size:12.5px; font-weight:700; color:#9a6a00; letter-spacing:0.5px; margin-bottom:8px; }
+  .dash-card .num{ font-size:52px; font-weight:900; color: var(--ink); letter-spacing:-1px; line-height:1; }
+  .dash-card .sub{ font-size:14px; color: var(--ink-muted); margin-top:6px; }
+  .dash-card .delta{ font-size:13px; font-weight:700; margin-top:10px; display:inline-block; padding:4px 12px; border-radius:999px; background:rgba(255,255,255,0.7); }
+  .dash-card .delta.up{ color: #2a7a48; }
+  .dash-card .delta.down{ color: #c15a3d; }
+  .dash-card .delta.flat{ color: var(--ink-muted); }
 
-  .stat-pair{ display:flex; gap:14px; margin: 18px 0 26px; }
+  .stat-pair{ display:flex; gap:14px; margin: 0 0 22px; }
   .stat-pill{ flex:1; border-radius:16px; padding:14px 16px; }
   .stat-pill.good{ background: var(--moss-dim); }
   .stat-pill.warn{ background: var(--coral-dim); }
@@ -213,58 +215,66 @@
 
   .stat-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin-bottom:8px; }
   .stat-box{ background: var(--surface); border:2px solid var(--border); border-radius:16px; padding:14px 16px; }
-  .stat-box .num{ font-size:28px; font-weight:900; color: var(--ink); }
+  .stat-box .num{ font-size:26px; font-weight:900; color: var(--ink); }
   .stat-box .cap{ font-size:12px; color: var(--ink-muted); margin-top:3px; }
   .stat-box .sub{ font-size:11.5px; color: var(--ink-muted); margin-top:6px; }
   .stat-box .sub b{ color: var(--ink); font-weight:700; }
 
-  .habit-chips{ display:flex; gap:8px; overflow-x:auto; padding-bottom:8px; margin-bottom:16px; }
-  .habit-chips button{ flex-shrink:0; border: 1.5px solid var(--border); background: var(--surface); padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight:600; color: var(--ink-muted); cursor:pointer; }
-  .habit-chips button.active{ background: var(--moss); border-color: var(--moss); color:#fff; }
+  /* ---------- Weekly Overview ---------- */
+  .week-card{ background: var(--surface); border:2px solid var(--border); border-radius:18px; padding:16px 14px; margin-bottom:24px; }
+  .week-table-row{ display:flex; align-items:center; padding: 8px 0; }
+  .week-table-row.header{ padding-bottom:10px; margin-bottom:4px; border-bottom:1.5px solid var(--border); }
+  .wk-name{ font-size:13px; font-weight:700; flex-shrink:0; width:74px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .wk-cols{ flex:1; display:grid; grid-template-columns: repeat(7,1fr); }
+  .wk-cols .lbl{ text-align:center; font-size:11px; color: var(--ink-muted); font-weight:700; }
+  .wk-chip-wrap{ display:flex; align-items:center; justify-content:center; }
+  .wk-chip{ width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:900; }
+  .wk-chip.done{ background: var(--moss); color:#fff; }
+  .wk-chip.miss{ border:1.5px solid var(--border); color:transparent; }
+  .wk-chip.skip{ background: var(--border); color: var(--ink-muted); font-size:13px; }
+  .wk-chip.na{ }
+
+  .habit-chips{ display:flex; gap:8px; overflow-x:auto; padding-bottom:8px; margin-bottom:16px; -webkit-overflow-scrolling: touch; }
+  .habit-chips button{ flex-shrink:0; border: 1.5px solid var(--border); background: var(--surface); padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight:600; color: var(--ink-muted); cursor:pointer; }
+  .habit-chips button.active{ background: var(--ink); border-color: var(--ink); color:#fff; }
 
   .day-detail-panel{ margin-top:14px; background: var(--surface); border:2px solid var(--border); border-radius:14px; padding:14px 16px; }
   .day-detail-date{ font-size:14.5px; font-weight:900; margin-bottom:8px; }
   .day-detail-line{ display:flex; justify-content:space-between; font-size:14px; padding:5px 0; }
 
-  .cal-nav{ display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom: 12px; }
-  .cal-nav button{ background:none; border:none; color: var(--moss); font-size:18px; font-weight:900; cursor:pointer; line-height:1; padding:0 4px; }
+  .cal-nav{ display:flex; align-items:center; justify-content:center; gap:20px; margin-bottom: 12px; }
+  .cal-nav button{ background:none; border:none; color: var(--ink); font-size:20px; font-weight:900; cursor:pointer; line-height:1; padding:6px 10px; }
   .cal-nav .label{ font-size:14.5px; font-weight:900; min-width:80px; text-align:center; }
   .cal-weekdays{ display:grid; grid-template-columns: repeat(7,1fr); margin-bottom:6px; }
   .cal-weekdays div{ text-align:center; font-size:11.5px; color: var(--ink-muted); font-weight:700; }
   .cal-days{ display:grid; grid-template-columns: repeat(7,1fr); gap:4px; }
-  .cal-cell{ aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; font-size:12px; color: var(--ink-muted); border:1.5px solid var(--border); border-radius:9px; cursor:pointer; }
+  .cal-cell{ aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; font-size:12px; color: var(--ink-muted); border:1.5px solid var(--border); border-radius:9px; cursor:pointer; }
   .cal-cell.pad{ border-color:transparent; cursor:default; }
   .cal-cell .cal-d{ line-height:1; }
-  .cal-cell .cal-mark{ font-size:11px; line-height:1; color: var(--moss); font-weight:900; }
-  .cal-cell.skipped .cal-mark{ color: var(--coral); }
+  .cal-cell .cal-mark{ width:7px; height:7px; border-radius:50%; background: var(--moss); }
+  .cal-cell.skipped .cal-mark{ background: var(--ink-muted); border-radius:1px; width:8px; height:2.5px; }
   .cal-cell.done{ background: var(--moss-dim); border-color: var(--moss-dim); }
-  .cal-cell.today{ box-shadow: inset 0 0 0 2px var(--berry); }
+  .cal-cell.today{ box-shadow: inset 0 0 0 2px var(--sun); }
 
   /* ---------- Settings ---------- */
-  .settings-row{ padding: 13px 2px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+  .settings-row{ padding: 14px 2px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; gap:10px; }
   .settings-row .lbl{ font-size:14.5px; font-weight:700; }
   .settings-row .desc{ font-size:12px; color: var(--ink-muted); margin-top:2px; }
-  .settings-row button{ background: var(--surface); border:1.5px solid var(--border); border-radius:10px; padding:8px 14px; font-size:13px; font-weight:700; cursor:pointer; color: var(--ink); flex-shrink:0; }
+  .settings-row button{ background: var(--surface); border:1.5px solid var(--border); border-radius:10px; padding:9px 14px; font-size:13px; font-weight:700; cursor:pointer; color: var(--ink); flex-shrink:0; }
 
   @media (max-width:420px){
     .hero .progress-line .frac{ font-size:34px; }
-    .stat-hero .num{ font-size:42px; }
+    .dash-card .num{ font-size:42px; }
     .stat-pair{ flex-direction:column; }
     nav.tabs{ gap:16px; }
+    .wk-name{ width:58px; font-size:12px; }
   }
 </style>
 </head>
 <body>
 
 <div id="loginScreen">
-  <svg class="scene" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="60" cy="60" r="56" fill="#FFF4DA"/>
-    <circle cx="88" cy="34" r="14" fill="#FFC53D"/>
-    <path d="M20 88c8-30 26-40 40-40s32 10 40 40z" fill="#2FA35F"/>
-    <path d="M46 88c3-16 10-22 14-22s11 6 14 22z" fill="#3DBE73"/>
-    <circle cx="34" cy="80" r="6" fill="#E0577A"/>
-    <circle cx="86" cy="82" r="5" fill="#4AAEDB"/>
-  </svg>
+  <div class="spot spot-lg"></div>
   <h1>習慣花園</h1>
   <p>登入後,紀錄會保存在雲端,換裝置也看得到。</p>
   <button id="googleBtn">
@@ -277,10 +287,7 @@
 <div id="app" hidden>
   <header class="top">
     <div class="brand">
-      <svg class="mark" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M11 28c-1-6 0-11 3-14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-        <path d="M9 27c9 3 15-1 16-9-8-2-14 2-16 9z" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+      <div class="spot"></div>
       <h1>習慣花園</h1>
     </div>
     <div class="user">
@@ -302,7 +309,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -354,10 +361,20 @@ function getTypeLabel(key){ const t = TYPE_LIST.find(x=>x.key===key); return t ?
 /* ---------- Auth ---------- */
 document.getElementById('googleBtn').addEventListener('click', async () => {
   document.getElementById('loginStatus').textContent = '登入中…';
-  try{ await signInWithPopup(auth, provider); }
-  catch(e){ document.getElementById('loginStatus').textContent = '登入失敗,請再試一次(' + e.code + ')'; }
+  try{
+    await signInWithPopup(auth, provider);
+  }catch(e){
+    // Popups are often blocked or unreliable on mobile Safari — fall back to redirect flow.
+    try{ await signInWithRedirect(auth, provider); }
+    catch(e2){ document.getElementById('loginStatus').textContent = '登入失敗,請再試一次(' + e2.code + ')'; }
+  }
 });
 document.getElementById('signOutBtn').addEventListener('click', () => signOut(auth));
+
+// Complete sign-in if we just came back from a redirect (mobile Safari path).
+getRedirectResult(auth).catch((e)=>{
+  if(e && e.code) document.getElementById('loginStatus').textContent = '登入失敗,請再試一次(' + e.code + ')';
+});
 
 onAuthStateChanged(auth, (user) => {
   if(user){
@@ -474,21 +491,6 @@ function dayStatus(habit, dateStr){
 }
 function passiveStatus(s){ return s==='skipped' || s==='not_scheduled' || s==='paused'; }
 
-function calcStreak(habit){
-  let streak = 0;
-  let cursor = new Date();
-  let cursorStr = fmt(cursor);
-  if(dayStatus(habit, cursorStr) === 'not_done'){ cursor.setDate(cursor.getDate()-1); }
-  while(true){
-    cursorStr = fmt(cursor);
-    if(cursorStr < habit.startDate) break;
-    const s = dayStatus(habit, cursorStr);
-    if(s === 'done'){ streak++; cursor.setDate(cursor.getDate()-1); continue; }
-    if(passiveStatus(s)){ cursor.setDate(cursor.getDate()-1); continue; }
-    break;
-  }
-  return streak;
-}
 function calcLongestStreak(habit){
   let max=0, run=0;
   let cursor = parseDate(habit.startDate);
@@ -524,7 +526,6 @@ const CHEVRON_ICON = `<svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6
 const TRASH_ICON = `<svg viewBox="0 0 24 24" fill="none"><path d="M5 7h14M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2m-8 0v12a1 1 0 001 1h6a1 1 0 001-1V7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const PLUS_ICON = `<svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
 const SKIP_ICON = `<svg viewBox="0 0 24 24" fill="none"><path d="M6 5l9 7-9 7V5z" fill="currentColor"/><rect x="17" y="5" width="2.2" height="14" fill="currentColor"/></svg>`;
-const LEAF_ICON = `<svg viewBox="0 0 24 24" fill="none"><path d="M4 20c8 2 13-2 14-9-7-1-12 2-14 9z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 /* ---------- Tabs ---------- */
 document.querySelectorAll('nav.tabs button').forEach(btn=>{
@@ -556,13 +557,9 @@ function renderToday(){
   if(active.length === 0){
     listHtml = `
       <div class="empty-state">
-        <svg class="scene" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <ellipse cx="50" cy="82" rx="34" ry="6" fill="#F3EEDD"/>
-          <path d="M50 78V50" stroke="#2FA35F" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="50" cy="42" r="14" fill="#FFC53D"/>
-        </svg>
-        <h3>花園還是一片空地</h3>
-        <p>新增一個習慣,讓它慢慢長大。</p>
+        <div class="spot spot-lg"></div>
+        <h3>還沒有任何習慣</h3>
+        <p>新增一個開始吧。</p>
         <button onclick="document.querySelector('[data-tab=settings]').click()">＋ 新增習慣</button>
       </div>`;
   }else{
@@ -571,10 +568,7 @@ function renderToday(){
 
   el.innerHTML = `
     <div class="hero">
-      <svg class="scene-deco" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="78" cy="24" r="14" fill="#FFC53D" opacity="0.9"/>
-        <path d="M10 92c10-30 30-40 45-40s35 10 45 40z" fill="#2FA35F" opacity="0.9"/>
-      </svg>
+      <div class="spot"></div>
       <div class="date-meta">${dateMeta}</div>
       ${scheduledToday.length ? `
       <div class="progress-line"><span class="frac">${doneCount}<span class="of"> / ${scheduledToday.length}</span></span></div>
@@ -628,7 +622,7 @@ function renderTodayRow(h, t, idx){
   const isDim = (status === 'not_scheduled' || status === 'paused');
   const expanded = expandedRows.has(h.id);
   const color = habitColor(h, idx);
-  const badge = `<span class="badge" style="background:var(--${color})">${LEAF_ICON}</span>`;
+  const badge = `<span class="badge" style="background:var(--${color})"></span>`;
 
   if(isDim){
     return `
@@ -739,11 +733,11 @@ function getWeekDates(offsetWeeks){
   const dates = []; for(let i=0;i<7;i++){ const d=new Date(monday); d.setDate(monday.getDate()+i); dates.push(d); }
   return dates;
 }
-function weekGlyph(status){
-  if(status==='done') return '<span class="wk-glyph done">✓</span>';
-  if(status==='skipped') return '<span class="wk-glyph skip">—</span>';
-  if(status==='not_done' || status==='partial') return '<span class="wk-glyph miss">○</span>';
-  return '<span class="wk-glyph"></span>';
+function weekChip(status){
+  if(status==='done') return '<div class="wk-chip-wrap"><span class="wk-chip done">✓</span></div>';
+  if(status==='skipped') return '<div class="wk-chip-wrap"><span class="wk-chip skip">–</span></div>';
+  if(status==='not_done' || status==='partial') return '<div class="wk-chip-wrap"><span class="wk-chip miss"></span></div>';
+  return '<div class="wk-chip-wrap"><span class="wk-chip na"></span></div>';
 }
 function weekCompletion(h, weekDates){
   const today = new Date();
@@ -770,16 +764,6 @@ function renderRecords(){
   const thisWeek = getWeekDates(0);
   const lastWeek = getWeekDates(-1);
   const WD_LABELS = ['一','二','三','四','五','六','日'];
-
-  const headerRow = `<div class="week-table-row header"><div class="wk-name"></div><div class="wk-cols">${WD_LABELS.map(l=>`<span class="wk-glyph lbl">${l}</span>`).join('')}</div></div>`;
-  const matrixRows = habits.map(h=>{
-    const glyphs = thisWeek.map(d=>{
-      const ds = fmt(d);
-      if(d>new Date() || ds < h.startDate) return weekGlyph('na');
-      return weekGlyph(dayStatus(h, ds));
-    }).join('');
-    return `<div class="week-table-row"><div class="wk-name">${escapeHtml(h.name)}</div><div class="wk-cols">${glyphs}</div></div>`;
-  }).join('');
 
   let weekDone=0, weekScheduled=0, lastWeekDone=0;
   const perHabitWeek = habits.map(h=>{
@@ -814,15 +798,25 @@ function renderRecords(){
   const daysSinceOldest = oldestHabit ? Math.max(0, Math.round((new Date() - parseDate(oldestHabit.startDate)) / 86400000)) : 0;
   const activeHabitCount = state.habits.filter(h=>h.status!=='archived').length;
 
+  const headerRow = `<div class="week-table-row header"><div class="wk-name"></div><div class="wk-cols">${WD_LABELS.map(l=>`<span class="lbl">${l}</span>`).join('')}</div></div>`;
+  const matrixRows = habits.map(h=>{
+    const chips = thisWeek.map(d=>{
+      const ds = fmt(d);
+      if(d>new Date() || ds < h.startDate) return weekChip('na');
+      return weekChip(dayStatus(h, ds));
+    }).join('');
+    return `<div class="week-table-row"><div class="wk-name">${escapeHtml(h.name)}</div><div class="wk-cols">${chips}</div></div>`;
+  }).join('');
+
   el.innerHTML = `
-    <div class="record-heading">本週花園</div>
+    <div class="record-heading">本週</div>
     <div class="record-subheading">${fmtShort(thisWeek[0])} – ${fmtShort(thisWeek[6])}</div>
 
-    <div class="week-table">${headerRow}${matrixRows}</div>
-
-    <div class="stat-hero">
+    <div class="dash-card">
+      <div class="spot"></div>
+      <div class="cap">本週完成</div>
       <div class="num">${weekDone}</div>
-      <div class="cap">次完成 · 共 ${weekScheduled} 次應完成(${weekPct}%)</div>
+      <div class="sub">共 ${weekScheduled} 次應完成 · 完成率 ${weekPct}%</div>
       <div class="delta ${deltaCls}">${deltaTxt}</div>
     </div>
 
@@ -839,6 +833,9 @@ function renderRecords(){
       <div class="stat-box"><div class="num">${longestStreak}</div><div class="cap">最長連續紀錄</div>${longestStreakHabit?`<div class="sub"><b>${escapeHtml(longestStreakHabit.name)}</b></div>`:''}</div>
       <div class="stat-box"><div class="num">${daysSinceOldest}</div><div class="cap">建立最久的習慣天數</div>${oldestHabit?`<div class="sub"><b>${escapeHtml(oldestHabit.name)}</b></div>`:''}</div>
     </div>
+
+    <div class="section-label">這一週的每一天</div>
+    <div class="week-card">${headerRow}${matrixRows}</div>
 
     <div class="section-label">查看某一天</div>
     <div class="habit-chips" id="recHabitChips"></div>
@@ -892,11 +889,11 @@ function renderCalendar(){
     let cls = '', mark = '';
     if(ds >= habit.startDate && ds <= t){
       const s = dayStatus(habit, ds);
-      if(s==='done'){ cls='done'; mark='✓'; }
-      else if(s==='skipped'){ cls='skipped'; mark='—'; }
+      if(s==='done'){ cls='done'; mark='<span class="cal-mark"></span>'; }
+      else if(s==='skipped'){ cls='skipped'; mark='<span class="cal-mark"></span>'; }
     }
     if(ds === t) cls += ' today';
-    html += `<div class="cal-cell ${cls}" data-day="${ds}"><span class="cal-d">${d}</span>${mark?`<span class="cal-mark">${mark}</span>`:''}</div>`;
+    html += `<div class="cal-cell ${cls}" data-day="${ds}"><span class="cal-d">${d}</span>${mark}</div>`;
   }
   daysEl.innerHTML = html;
   daysEl.querySelectorAll('.cal-cell[data-day]').forEach(cell=>{
@@ -1042,9 +1039,9 @@ function showHabitForm(habit){
       <div class="field"><label>名稱</label><input id="fName" value="${habit?escapeHtml(habit.name):''}" placeholder="例如:喝水"></div>
       <div class="field">
         <label>類型</label>
-        <div class="type-picker">
+        <div class="type-picker" id="typePicker">
           ${TYPE_LIST.map(t=>`
-            <label class="type-option">
+            <label class="type-option ${t.key===defaultType?'tp-checked':''}">
               <input type="radio" name="fType" value="${t.key}" ${t.key===defaultType?'checked':''}>
               <div><b>${escapeHtml(t.label)}</b><span>${escapeHtml(t.desc)}</span></div>
             </label>`).join('')}
@@ -1062,7 +1059,7 @@ function showHabitForm(habit){
         <summary>進階設定</summary>
         <div class="adv-body">
           <div class="field"><label>執行日</label>
-            <div class="daypick">${WEEKDAY_CHECKS.map(w=>`<label><input type="checkbox" class="dayChk" value="${w.val}" ${habit&&habit.executionDays&&habit.executionDays.includes(w.val)?'checked':''}><span>${w.label}</span></label>`).join('')}</div>
+            <div class="daypick" id="dayPick">${WEEKDAY_CHECKS.map(w=>`<label class="${habit&&habit.executionDays&&habit.executionDays.includes(w.val)?'dc-on':''}"><input type="checkbox" class="dayChk" value="${w.val}" ${habit&&habit.executionDays&&habit.executionDays.includes(w.val)?'checked':''}><span>${w.label}</span></label>`).join('')}</div>
             <div class="hint">不選 = 每天</div>
           </div>
           <div class="field"><label>開始日期</label><input id="fStart" type="date" value="${habit?habit.startDate:todayStr()}"></div>
@@ -1079,8 +1076,16 @@ function showHabitForm(habit){
     const t = document.querySelector('input[name="fType"]:checked').value;
     document.getElementById('quantFields').style.display = (t==='boolean'||t==='avoidance') ? 'none' : 'block';
   }
-  document.querySelectorAll('input[name="fType"]').forEach(r=>r.addEventListener('change', syncTypeVisibility));
+  document.querySelectorAll('input[name="fType"]').forEach(r=>r.addEventListener('change', (e)=>{
+    document.querySelectorAll('#typePicker .type-option').forEach(opt=>opt.classList.remove('tp-checked'));
+    e.target.closest('.type-option').classList.add('tp-checked');
+    syncTypeVisibility();
+  }));
   syncTypeVisibility();
+
+  document.querySelectorAll('#dayPick .dayChk').forEach(chk=>chk.addEventListener('change', (e)=>{
+    e.target.closest('label').classList.toggle('dc-on', e.target.checked);
+  }));
 
   document.getElementById('cancelFormBtn').addEventListener('click', ()=>{ editingHabitId=null; host.innerHTML=''; });
   document.getElementById('saveHabitBtn').addEventListener('click', async ()=>{
