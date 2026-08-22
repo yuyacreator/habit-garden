@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#FFCB3D">
-<title>習慣花園</title>
+<title>Habit Tracker</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='19' fill='%23FFCB3D'/%3E%3C/svg%3E">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%23FFCB3D'/%3E%3Ccircle cx='90' cy='90' r='58' fill='%23FFFFFF' fill-opacity='0.001'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%23FFCB3D'/%3E%3C/svg%3E">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
 
@@ -20,15 +20,12 @@
     --sky: #4AAEDB;
     --sky-dim: #E6F4FB;
     --teal: #2AA79E;
-    --teal-dim: #E1F4F2;
-    --sun: #FFCB3D;
-    --sun-dim: #FFF9E5;
     --coral: #FF7A59;
     --coral-dim: #FFEBE4;
     --berry: #E0577A;
-    --berry-dim: #FBE8EE;
     --lilac: #8B7FD1;
-    --lilac-dim: #EFEBFA;
+    --sun: #FFCB3D;
+    --sun-dim: #FFF9E5;
     --border: #E9E4D5;
   }
   *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
@@ -45,10 +42,8 @@
   button{ font-family:inherit; -webkit-appearance:none; appearance:none; }
   input, select, textarea{ font-size:16px; }
 
-  /* ---------- Brand mark: a plain circle, nothing else ---------- */
   .spot{ border-radius:50%; background: var(--sun); flex-shrink:0; }
 
-  /* ---------- Login ---------- */
   #loginScreen{ min-height:100vh; min-height:100dvh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding: 24px; text-align:center; }
   #loginScreen .spot-lg{ width:88px; height:88px; margin-bottom:20px; }
   #loginScreen h1{ font-size:30px; font-weight:900; margin: 0 0 8px; }
@@ -57,10 +52,1197 @@
   #googleBtn svg{ width:19px; height:19px; }
   #loginStatus{ margin-top:14px; font-size:13px; color: var(--ink-muted); min-height: 18px; }
 
-  /* ---------- Shell ---------- */
   #app{ max-width: 640px; margin: 0 auto; padding: 22px 18px 0; }
   #app[hidden]{ display:none; }
   header.top{ display:flex; align-items:center; justify-content:space-between; margin-bottom: 20px; }
+  header.top .brand{ display:flex; align-items:center; gap:9px; }
+  header.top .brand .spot{ width:24px; height:24px; }
+  header.top .brand h1{ font-size:18px; font-weight:900; margin:0; }
+  header.top .user{ display:flex; align-items:center; gap:9px; }
+  header.top .user img{ width:28px; height:28px; border-radius:50%; }
+  header.top .user button{ background:none; border:none; color: var(--ink-muted); font-size:12.5px; cursor:pointer; text-decoration:underline; padding:0; }
+
+  nav.tabs{ display:flex; gap: 22px; border-bottom: 2px solid var(--border); margin-bottom: 24px; }
+  nav.tabs button{ border:none; background:transparent; padding: 0 2px 11px; font-size: 15px; font-weight:700; color: var(--ink-muted); cursor:pointer; border-bottom: 3px solid transparent; margin-bottom:-2px; }
+  nav.tabs button.active{ color: var(--ink); border-bottom-color: var(--sun); }
+
+  section.tab{ display:none; }
+  section.tab.active{ display:block; }
+
+  .hero{ margin-bottom: 24px; background: var(--sun-dim); border-radius: 22px; padding: 20px 22px; position:relative; overflow:hidden; }
+  .hero .spot{ position:absolute; right:18px; top:18px; width:30px; height:30px; }
+  .hero .date-meta{ font-size:13px; letter-spacing:1px; color:#8a6a1a; font-weight:700; margin-bottom:14px; }
+  .hero .hero-label{ font-size:13px; color: var(--ink-muted); font-weight:700; margin-bottom:2px; }
+  .hero .progress-line .frac{ font-weight:900; font-size:42px; color: var(--ink); letter-spacing:-0.5px; }
+  .hero .progress-line .frac .of{ font-size:20px; color: var(--ink-muted); font-weight:700; }
+  .hero .hero-sub{ font-size:13.5px; color: var(--ink-muted); margin-top:4px; }
+  .hero .track{ height:8px; background: rgba(255,255,255,0.75); border-radius:999px; margin-top:12px; overflow:hidden; max-width:70%; }
+  .hero .track .fill{ height:100%; background: var(--sun); border-radius:999px; transition: width .3s ease; }
+
+  .habit-row{ display:flex; align-items:center; gap:12px; padding: 16px 4px; border-bottom: 1px solid var(--border); position:relative; }
+  .habit-row:last-child{ border-bottom:none; }
+  .habit-row.dim{ opacity:0.45; }
+  .habit-row .badge{ width:12px; height:12px; border-radius:50%; flex-shrink:0; }
+  .habit-row .info{ flex:1; min-width:0; display:flex; align-items:center; gap:8px; cursor:pointer; }
+  .habit-row .name{ font-weight:700; font-size:17px; }
+  .habit-row .dim-tag{ font-size:12px; color: var(--ink-muted); flex-shrink:0; }
+  .habit-row .skip-tag{ font-size:11.5px; color: var(--coral); font-weight:700; }
+
+  .checkbox{ width:28px; height:28px; flex-shrink:0; border:2.5px solid var(--border); border-radius:9px; background:var(--surface); cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; transition: background .12s ease, border-color .12s ease, transform .12s ease; }
+  .checkbox svg{ width:17px; height:17px; color:#fff; }
+  .checkbox.checked{ transform: scale(1.05); }
+
+  .row-actions{ display:flex; align-items:center; gap:2px; flex-shrink:0; margin-left:auto; }
+  .icon-btn{ width:34px; height:34px; border:none; background:none; color: var(--ink-muted); opacity:0.55; cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:8px; padding:0; }
+  .icon-btn:active{ opacity:1; background: var(--sun-dim); }
+  .icon-btn svg{ width:16px; height:16px; }
+  .skip-btn svg{ width:14px; height:14px; }
+  .expand-btn svg{ transition: transform .15s ease; }
+  .expand-btn.open svg{ transform: rotate(180deg); }
+
+  .icon-text-btn{ display:inline-flex; align-items:center; gap:5px; background: var(--sun-dim); color:#8a6a1a; border:none; border-radius:8px; padding:8px 13px; font-size:12.5px; font-weight:700; cursor:pointer; margin-top:6px; }
+  .icon-text-btn svg{ width:13px; height:13px; }
+
+  .row-detail{ margin-top:10px; padding-top:10px; border-top:1px dashed var(--border); flex-basis:100%; }
+  .row-detail .detail-line{ display:flex; justify-content:space-between; align-items:center; font-size:13.5px; padding:6px 0; }
+  .row-detail .detail-line.muted{ color: var(--ink-muted); }
+  .row-detail .add-entry-row{ display:flex; gap:6px; margin-top:6px; align-items:center; }
+  .row-detail .add-entry-row input{ width:78px; border:1px solid var(--border); border-radius:8px; padding:8px; background:var(--paper); }
+  .row-detail .add-entry-row .icon-text-btn{ margin-top:0; }
+
+  .habit-row.qty-row{ flex-wrap:wrap; align-items:flex-start; }
+  .qty-top{ display:flex; align-items:center; width:100%; gap:10px; }
+  .qty-top .info{ cursor:default; }
+  .qty-progress{ width:100%; font-size:27px; font-weight:900; color: var(--ink); margin-top:6px; display:flex; align-items:baseline; gap:5px; padding-left:24px; }
+  .qty-progress .goal{ font-size:16px; font-weight:700; color: var(--ink-muted); }
+  .qty-progress .unit{ font-size:14px; font-weight:600; color: var(--ink-muted); }
+  .qty-progress .mini-check{ width:18px; height:18px; color: var(--moss); }
+  .qty-progress .mini-check svg{ width:100%; height:100%; }
+  .quick-chips{ display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; width:100%; padding-left:24px; }
+  .quick-chips button{ background: var(--sky-dim); color:#276a8c; border:none; border-radius:8px; padding:7px 13px; font-size:13px; font-weight:700; cursor:pointer; }
+
+  .empty-state{ text-align:center; padding: 56px 20px; color: var(--ink-muted); }
+  .empty-state .spot-lg{ width:72px; height:72px; margin: 0 auto 16px; }
+  .empty-state h3{ font-size:17px; color: var(--ink); font-weight:900; margin:0 0 6px; }
+  .empty-state p{ font-size:14px; margin:0 0 16px; }
+  .empty-state button{ background: var(--ink); color:#fff; border:none; border-radius:12px; padding:11px 22px; font-weight:700; font-size:14px; cursor:pointer; }
+
+  .section-label{ font-size:12px; letter-spacing:1px; color:var(--ink-muted); font-weight:900; margin: 24px 0 10px; }
+  .section-label:first-child{ margin-top:0; }
+  .manage-row{ padding: 12px 2px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; gap:10px; }
+  .manage-row .info b{ font-size:15px; font-weight:700; }
+  .manage-row .info .meta-line{ font-size:12px; color: var(--ink-muted); margin-top:2px; }
+  .manage-row.disabled .info b{ color: var(--ink-muted); text-decoration: line-through; }
+  .manage-row .link-actions{ display:flex; gap:12px; flex-shrink:0; flex-wrap:wrap; justify-content:flex-end; }
+  .manage-row .link-actions button{ background:none; border:none; font-size:12.5px; color: var(--moss); text-decoration:underline; cursor:pointer; padding:2px 0; font-weight:600; }
+  .manage-row .link-actions button.muted{ color: var(--ink-muted); }
+  .manage-row .link-actions button.danger{ color: var(--berry); }
+
+  .add-btn-row{ margin-bottom: 6px; }
+  .add-btn-row button{ background: var(--ink); color:#fff; border:none; border-radius:12px; padding: 11px 16px; font-weight:700; font-size:14px; cursor:pointer; }
+  .add-btn-row.small button{ background: var(--surface); border:2px solid var(--border); color: var(--ink); padding:9px 14px; font-size:13px; }
+
+  .form-panel{ background: var(--surface); border:2px solid var(--border); border-radius: 18px; padding: 16px; margin-bottom: 18px; }
+  .form-panel h3{ font-size:16px; font-weight:900; margin:0 0 12px; }
+  .field{ margin-bottom: 12px; }
+  .field label{ display:block; font-size:12.5px; color: var(--ink-muted); margin-bottom:5px; font-weight:700; }
+  .field input, .field select, .field textarea{ width:100%; border:1.5px solid var(--border); border-radius:10px; padding: 11px; outline:none; font-family:'Noto Sans TC',sans-serif; background: var(--paper); }
+  .field input:focus, .field select:focus, .field textarea:focus{ border-color: var(--sun); }
+  .field textarea{ resize:vertical; min-height:52px; }
+  .field-row{ display:flex; gap:10px; }
+  .field-row .field{ flex:1; }
+  .hint{ font-size:11.5px; color:#a39c86; margin-top:4px; }
+
+  .daypick{ display:flex; gap:6px; }
+  .daypick label{ flex:1; text-align:center; }
+  .daypick input{ display:none; }
+  .daypick span{ display:block; padding:9px 0; border:1.5px solid var(--border); border-radius:8px; font-size:12.5px; color: var(--ink-muted); cursor:pointer; }
+  .daypick .dc-on span{ background: var(--sun-dim); border-color: var(--sun); color:#8a6a1a; font-weight:700; }
+
+  details.adv{ margin-bottom: 12px; }
+  details.adv summary{ font-size:13px; color: var(--moss); cursor:pointer; font-weight:700; padding:8px 0; }
+  details.adv .adv-body{ padding-top:8px; }
+
+  .type-picker{ display:flex; flex-direction:column; gap:7px; }
+  .type-option{ display:flex; align-items:flex-start; gap:10px; border:1.5px solid var(--border); border-radius:12px; padding:11px 12px; cursor:pointer; }
+  .type-option.tp-checked{ border-color: var(--sun); background: var(--sun-dim); }
+  .type-option input{ width:auto; margin-top:3px; accent-color: var(--sun); }
+  .type-option div{ display:flex; flex-direction:column; gap:2px; }
+  .type-option b{ font-size:14px; }
+  .type-option span{ font-size:12.5px; color: var(--ink-muted); }
+
+  .form-actions{ display:flex; gap:10px; margin-top:4px; }
+  .form-actions .primary{ flex:1; background: var(--ink); color:#fff; border:none; border-radius:10px; padding:12px; font-weight:700; font-size:14.5px; cursor:pointer; }
+  .form-actions .ghost{ background:none; border:none; color: var(--ink-muted); font-size:13px; text-decoration:underline; cursor:pointer; }
+
+  /* ---------- Dashboard ---------- */
+  .record-heading{ font-size:20px; font-weight:900; margin:2px 0 2px; }
+  .record-subheading{ font-size:13px; color: var(--ink-muted); margin-bottom:18px; }
+
+  .dash-card{ background: var(--sun-dim); border-radius: 22px; padding: 22px 24px; margin-bottom:18px; position:relative; overflow:hidden; }
+  .dash-card .spot{ position:absolute; right:20px; top:20px; width:24px; height:24px; }
+  .dash-card .cap{ font-size:12.5px; font-weight:700; color:#8a6a1a; letter-spacing:0.5px; margin-bottom:8px; }
+  .dash-card .num{ font-size:52px; font-weight:900; color: var(--ink); letter-spacing:-1px; line-height:1; }
+  .dash-card .delta{ font-size:13px; font-weight:700; margin-top:10px; display:inline-block; padding:4px 12px; border-radius:999px; background:rgba(255,255,255,0.75); }
+  .dash-card .delta.up{ color: #2a7a48; }
+  .dash-card .delta.down{ color: #c15a3d; }
+  .dash-card .delta.flat{ color: var(--ink-muted); }
+
+  .stat-pair{ display:flex; gap:14px; margin: 0 0 22px; }
+  .stat-pill{ flex:1; border-radius:16px; padding:14px 16px; }
+  .stat-pill.good{ background: var(--moss-dim); }
+  .stat-pill.warn{ background: var(--coral-dim); }
+  .stat-pill .lbl{ font-size:11.5px; font-weight:700; letter-spacing:0.5px; margin-bottom:6px; }
+  .stat-pill.good .lbl{ color:#2a7a48; }
+  .stat-pill.warn .lbl{ color:#c15a3d; }
+  .stat-pill .name{ font-size:16px; font-weight:900; }
+  .stat-pill .ratio{ font-size:12.5px; color: var(--ink-muted); margin-top:2px; }
+
+  .cat-stat-row{ display:flex; align-items:center; gap:12px; padding:9px 2px; }
+  .cat-stat-row .lbl{ width:80px; flex-shrink:0; font-size:14px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .cat-stat-row .track{ flex:1; height:8px; background: var(--border); border-radius:999px; overflow:hidden; }
+  .cat-stat-row .fill{ height:100%; background: var(--sun); border-radius:999px; }
+  .cat-stat-row .pct{ width:42px; flex-shrink:0; text-align:right; font-size:13.5px; font-weight:700; }
+
+  .cum-row{ display:flex; align-items:center; gap:12px; padding:9px 2px; }
+  .cum-row .lbl{ width:80px; flex-shrink:0; font-size:14px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .cum-row .track{ flex:1; height:8px; background: var(--border); border-radius:999px; overflow:hidden; }
+  .cum-row .fill{ height:100%; border-radius:999px; }
+  .cum-row .num{ width:52px; flex-shrink:0; text-align:right; font-size:13.5px; font-weight:700; color: var(--ink-muted); }
+
+  .week-card{ background: var(--surface); border:2px solid var(--border); border-radius:18px; padding:16px 14px; margin-bottom:24px; }
+  .week-head-row{ display:flex; align-items:center; padding-bottom:10px; margin-bottom:8px; border-bottom:1.5px solid var(--border); }
+  .week-head-row .wk-name{ width:74px; flex-shrink:0; }
+  .week-head-row .wk-cols{ flex:1; display:grid; grid-template-columns: repeat(7,1fr); }
+  .wk-col-head{ display:flex; flex-direction:column; align-items:center; gap:2px; }
+  .wk-col-head .wd{ font-size:11px; color: var(--ink-muted); font-weight:700; }
+  .wk-col-head .dd{ font-size:12.5px; color: var(--ink-muted); font-weight:700; }
+  .wk-col-head.is-today .dd{ color:#fff; background: var(--ink); width:19px; height:19px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+  .week-table-row{ display:flex; align-items:center; padding: 8px 0; }
+  .wk-name{ font-size:13px; font-weight:700; flex-shrink:0; width:74px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .wk-cols{ flex:1; display:grid; grid-template-columns: repeat(7,1fr); }
+  .wk-chip-wrap{ display:flex; align-items:center; justify-content:center; }
+  .wk-chip{ width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:900; color:#fff; }
+  .wk-chip.miss{ border:1.5px solid var(--border); background:transparent; }
+  .wk-chip.skip{ background: var(--border); color: var(--ink-muted); font-size:13px; }
+  .wk-chip.na{ }
+
+  .habit-chips{ display:flex; gap:8px; overflow-x:auto; padding-bottom:8px; margin-bottom:16px; -webkit-overflow-scrolling: touch; }
+  .habit-chips button{ flex-shrink:0; border: 1.5px solid var(--border); background: var(--surface); padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight:600; color: var(--ink-muted); cursor:pointer; }
+  .habit-chips button.active{ background: var(--ink); border-color: var(--ink); color:#fff; }
+
+  .day-detail-panel{ margin-top:14px; background: var(--surface); border:2px solid var(--border); border-radius:14px; padding:16px; }
+  .day-detail-date{ font-size:15px; font-weight:900; margin-bottom:4px; }
+  .day-detail-habit{ font-size:13.5px; color: var(--ink-muted); margin-bottom:12px; display:flex; align-items:center; gap:7px; }
+  .day-detail-habit .dd-dot{ width:9px; height:9px; border-radius:50%; }
+  .day-detail-status{ font-size:16px; font-weight:900; margin-bottom:8px; }
+  .day-detail-entry{ display:flex; justify-content:space-between; font-size:14px; padding:5px 0; border-bottom:1px solid var(--border); }
+  .day-detail-entry:last-child{ border-bottom:none; }
+  .day-detail-empty{ color: var(--ink-muted); font-size:13.5px; }
+
+  .cal-nav{ display:flex; align-items:center; justify-content:center; gap:20px; margin-bottom: 14px; }
+  .cal-nav button{ background:none; border:none; color: var(--ink); font-size:20px; font-weight:900; cursor:pointer; line-height:1; padding:6px 10px; }
+  .cal-nav .label{ font-size:14.5px; font-weight:900; min-width:90px; text-align:center; }
+  .cal-weekdays{ display:grid; grid-template-columns: repeat(7,1fr); margin-bottom:6px; }
+  .cal-weekdays div{ text-align:center; font-size:11.5px; color: var(--ink-muted); font-weight:700; }
+  .cal-days{ display:grid; grid-template-columns: repeat(7,1fr); gap:5px; }
+  .cal-cell{ aspect-ratio:0.85; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:6px; font-size:12.5px; color: var(--ink-muted); border:1.5px solid var(--border); border-radius:10px; cursor:pointer; padding-top:7px; }
+  .cal-cell.pad{ border-color:transparent; cursor:default; }
+  .cal-cell .cal-d{ line-height:1; font-weight:700; }
+  .cal-cell .cal-dot{ width:11px; height:11px; border-radius:50%; }
+  .cal-cell.today{ box-shadow: inset 0 0 0 2px var(--sun); }
+
+  .settings-row{ padding: 14px 2px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; gap:10px; }
+  .settings-row .lbl{ font-size:14.5px; font-weight:700; }
+  .settings-row .desc{ font-size:12px; color: var(--ink-muted); margin-top:2px; }
+  .settings-row button{ background: var(--surface); border:1.5px solid var(--border); border-radius:10px; padding:9px 14px; font-size:13px; font-weight:700; cursor:pointer; color: var(--ink); flex-shrink:0; }
+
+  @media (max-width:420px){
+    .hero .progress-line .frac{ font-size:34px; }
+    .dash-card .num{ font-size:42px; }
+    nav.tabs{ gap:16px; }
+    .wk-name, .week-head-row .wk-name{ width:56px; font-size:12px; }
+    .cat-stat-row .lbl, .cum-row .lbl{ width:60px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div class="spot spot-lg"></div>
+  <h1>Habit Tracker</h1>
+  <p>登入後,紀錄會保存在雲端,換裝置也看得到。</p>
+  <button id="googleBtn">
+    <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4c-7.4 0-13.8 4.1-17.1 10.1z"/><path fill="#4CAF50" d="M24 44c5.5 0 10.4-1.9 14.3-5.1l-6.6-5.4c-2 1.4-4.7 2.3-7.7 2.3-5.2 0-9.6-3.3-11.2-7.9l-6.5 5C9.9 39.7 16.4 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.2 5.6l6.6 5.4C41.8 35.7 44 30.3 44 24c0-1.3-.1-2.7-.4-3.5z"/></svg>
+    使用 Google 登入
+  </button>
+  <div id="loginStatus"></div>
+</div>
+
+<div id="app" hidden>
+  <header class="top">
+    <div class="brand">
+      <div class="spot"></div>
+      <h1>Habit Tracker</h1>
+    </div>
+    <div class="user">
+      <img id="userAvatar" src="" alt="">
+      <button id="signOutBtn">登出</button>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button data-tab="today" class="active">今日</button>
+    <button data-tab="records">紀錄</button>
+    <button data-tab="settings">設定</button>
+  </nav>
+
+  <section class="tab active" id="tab-today"></section>
+  <section class="tab" id="tab-records"></section>
+  <section class="tab" id="tab-settings"></section>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBfahNxiikOm_MlOr_A90BquRwFRM35Uho",
+  authDomain: "habit-tracker202608.firebaseapp.com",
+  projectId: "habit-tracker202608",
+  storageBucket: "habit-tracker202608.firebasestorage.app",
+  messagingSenderId: "944347991980",
+  appId: "1:944347991980:web:9b0007453ea9f8cba47409"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+let uid = null;
+let unsub = null;
+let state = { habits: [], logs: {}, categories: [] };
+
+let editingHabitId = null;
+let historySelectedHabit = null;
+let calCursor = new Date();
+
+const WEEKDAY_CHECKS = [ {label:'一', val:1}, {label:'二', val:2}, {label:'三', val:3}, {label:'四', val:4}, {label:'五', val:5}, {label:'六', val:6}, {label:'日', val:0} ];
+const HABIT_COLORS = ['moss','sky','teal','coral','berry','lilac'];
+function habitColorFor(h){
+  const idx = state.habits.findIndex(x=>x.id===h.id);
+  return HABIT_COLORS[(idx<0?0:idx) % HABIT_COLORS.length];
+}
+
+function defaultCategories(){
+  return [
+    {id:'body', label:'健康', disabled:false},
+    {id:'study', label:'學習', disabled:false},
+    {id:'life', label:'生活', disabled:false},
+    {id:'work', label:'工作', disabled:false},
+    {id:'relationship', label:'關係', disabled:false},
+    {id:'other', label:'其他', disabled:false}
+  ];
+}
+const TYPE_LIST = [
+  {key:'boolean', label:'完成型', desc:'完成一次即可,例如:吃維他命'},
+  {key:'quantity', label:'數量型', desc:'記錄數量,例如:喝水 2000 ml'},
+  {key:'duration', label:'時間型', desc:'記錄時間,例如:閱讀 30 分鐘'},
+  {key:'count', label:'次數型', desc:'記錄次數,例如:深蹲 3 次'},
+  {key:'avoidance', label:'避免型', desc:'記錄今天是否避免某件事,例如:不喝含糖飲料'}
+];
+function getCategoryLabel(id){ if(!id) return ''; const c = state.categories.find(x=>x.id===id); return c ? c.label : ''; }
+function getTypeLabel(key){ const t = TYPE_LIST.find(x=>x.key===key); return t ? t.label : key; }
+
+/* ---------- Auth ---------- */
+document.getElementById('googleBtn').addEventListener('click', async () => {
+  document.getElementById('loginStatus').textContent = '登入中…';
+  try{
+    await signInWithPopup(auth, provider);
+  }catch(e){
+    try{ await signInWithRedirect(auth, provider); }
+    catch(e2){ document.getElementById('loginStatus').textContent = '登入失敗,請再試一次(' + e2.code + ')'; }
+  }
+});
+document.getElementById('signOutBtn').addEventListener('click', () => signOut(auth));
+getRedirectResult(auth).catch((e)=>{
+  if(e && e.code) document.getElementById('loginStatus').textContent = '登入失敗,請再試一次(' + e.code + ')';
+});
+
+onAuthStateChanged(auth, (user) => {
+  if(user){
+    uid = user.uid;
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').hidden = false;
+    document.getElementById('userAvatar').src = user.photoURL || '';
+    listenToData();
+  }else{
+    uid = null;
+    if(unsub) unsub();
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('app').hidden = true;
+  }
+});
+
+function listenToData(){
+  const ref = doc(db, 'users', uid);
+  unsub = onSnapshot(ref, (snap) => {
+    const raw = snap.exists() ? snap.data() : { habits: [], logs: {} };
+    state = migrateState(raw);
+    renderAll();
+  });
+}
+async function saveState(){ await setDoc(doc(db, 'users', uid), state); }
+
+/* ---------- Migration ---------- */
+function migrateState(raw){
+  const s = raw && typeof raw === 'object' ? JSON.parse(JSON.stringify(raw)) : {};
+  s.habits = Array.isArray(s.habits) ? s.habits : [];
+  s.logs = s.logs && typeof s.logs === 'object' ? s.logs : {};
+  s.categories = (Array.isArray(s.categories) && s.categories.length) ? s.categories : defaultCategories();
+
+  Object.keys(s.logs).forEach(habitId=>{
+    const byDate = s.logs[habitId];
+    if(!byDate || typeof byDate !== 'object'){ s.logs[habitId] = {}; return; }
+    Object.keys(byDate).forEach(dateKey=>{
+      const log = byDate[dateKey];
+      if(!log || typeof log !== 'object'){ byDate[dateKey] = { status:'not_done', amount:0, entries:[] }; return; }
+      if(log.amount === undefined && log.total !== undefined) log.amount = log.total;
+      if(log.amount === undefined) log.amount = 0;
+      if(!Array.isArray(log.entries)) log.entries = [];
+    });
+  });
+
+  s.habits = s.habits.map(h => migrateHabit(h, s.logs));
+  return s;
+}
+function earliestLogDate(habitId, logs){
+  const byDate = logs[habitId];
+  if(!byDate) return null;
+  const keys = Object.keys(byDate);
+  if(!keys.length) return null;
+  return keys.sort()[0];
+}
+function migrateHabit(h, logs){
+  h = Object.assign({}, h);
+  if(!h.id) h.id = 'hb_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
+  if(!h.name) h.name = '未命名習慣';
+  if(!h.type){ h.type = (h.unit || h.goal || (h.quickAdds && h.quickAdds.length)) ? 'quantity' : 'boolean'; }
+  if(h.category === undefined) h.category = '';
+  if(h.unit === undefined) h.unit = '';
+  if(!Array.isArray(h.quickAdds)) h.quickAdds = [];
+  if(!Array.isArray(h.executionDays)) h.executionDays = [];
+  if(!h.startDate){ h.startDate = earliestLogDate(h.id, logs) || todayStr(); }
+  if(!h.status) h.status = 'active';
+  if(!Array.isArray(h.pausedRanges)) h.pausedRanges = [];
+  if(!Array.isArray(h.configHistory) || h.configHistory.length===0){
+    h.configHistory = [{ effectiveFrom: h.startDate, goal: (h.goal !== undefined ? h.goal : null) }];
+  }
+  delete h.goal;
+  if(h.note === undefined) h.note = '';
+  return h;
+}
+
+/* ---------- Date helpers ---------- */
+function pad(n){ return n<10 ? '0'+n : ''+n; }
+function fmt(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function todayStr(){ return fmt(new Date()); }
+function parseDate(s){ const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); }
+function escapeHtml(str){ const div=document.createElement('div'); div.textContent = str==null?'':String(str); return div.innerHTML; }
+
+/* ---------- Domain logic ---------- */
+function isExecutionDay(habit, dateStr){
+  if(!habit.executionDays || habit.executionDays.length === 0) return true;
+  const dow = parseDate(dateStr).getDay();
+  return habit.executionDays.includes(dow);
+}
+function isPausedOn(habit, dateStr){
+  if(!habit.pausedRanges) return false;
+  return habit.pausedRanges.some(r => dateStr >= r.from && dateStr <= r.to);
+}
+function effectiveGoal(habit, dateStr){
+  if(!habit.configHistory || habit.configHistory.length === 0) return null;
+  let g = null;
+  for(const c of habit.configHistory){ if(c.effectiveFrom <= dateStr) g = c.goal; }
+  return g;
+}
+function getLog(habitId, dateStr){ return (state.logs[habitId] && state.logs[habitId][dateStr]) || null; }
+function dayStatus(habit, dateStr){
+  if(isPausedOn(habit, dateStr)) return 'paused';
+  if(!isExecutionDay(habit, dateStr)) return 'not_scheduled';
+  const log = getLog(habit.id, dateStr);
+  if(!log) return 'not_done';
+  if(log.status === 'skipped') return 'skipped';
+  if(habit.type === 'boolean' || habit.type === 'avoidance'){
+    return log.status === 'done' ? 'done' : 'not_done';
+  }
+  const goal = effectiveGoal(habit, dateStr);
+  const amt = log.amount || 0;
+  if(goal){ return amt >= goal ? 'done' : (amt > 0 ? 'partial' : 'not_done'); }
+  return amt > 0 ? 'done' : 'not_done';
+}
+function passiveStatus(s){ return s==='skipped' || s==='not_scheduled' || s==='paused'; }
+function isScheduledThatDay(habit, dateStr){
+  return dateStr >= habit.startDate && !isPausedOn(habit, dateStr) && isExecutionDay(habit, dateStr);
+}
+function calcLifetimeStats(habit){
+  let done=0, total=0;
+  let cursor = parseDate(habit.startDate);
+  const today = new Date(); today.setHours(0,0,0,0);
+  let guard = 0;
+  while(cursor <= today && guard < 5000){
+    const ds = fmt(cursor);
+    const s = dayStatus(habit, ds);
+    if(!passiveStatus(s)){ total++; if(s==='done') done++; }
+    cursor.setDate(cursor.getDate()+1);
+    guard++;
+  }
+  return { done, total };
+}
+
+const CHECK_ICON = `<svg viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const CHEVRON_ICON = `<svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const TRASH_ICON = `<svg viewBox="0 0 24 24" fill="none"><path d="M5 7h14M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2m-8 0v12a1 1 0 001 1h6a1 1 0 001-1V7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const PLUS_ICON = `<svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+const SKIP_ICON = `<svg viewBox="0 0 24 24" fill="none"><path d="M6 5l9 7-9 7V5z" fill="currentColor"/><rect x="17" y="5" width="2.2" height="14" fill="currentColor"/></svg>`;
+
+/* ---------- Tabs ---------- */
+document.querySelectorAll('nav.tabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('section.tab').forEach(s=>s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+    if(btn.dataset.tab === 'records') renderRecords();
+    if(btn.dataset.tab === 'settings') renderSettings();
+  });
+});
+
+/* ================= TODAY ================= */
+let expandedRows = new Set();
+
+function renderToday(){
+  const el = document.getElementById('tab-today');
+  const t = todayStr();
+  const active = state.habits.filter(h=>h.status==='active');
+  const scheduledToday = active.filter(h=>!isPausedOn(h,t) && isExecutionDay(h,t));
+  const doneCount = scheduledToday.filter(h=>dayStatus(h,t)==='done').length;
+  const pct = scheduledToday.length ? Math.round(doneCount/scheduledToday.length*100) : 0;
+
+  const now = new Date();
+  const dateMeta = (now.getMonth()+1)+'月'+now.getDate()+'日 · 星期'+['日','一','二','三','四','五','六'][now.getDay()];
+  let heroSub = '';
+  if(scheduledToday.length){
+    if(doneCount===0) heroSub = '準備好開始了嗎?';
+    else if(doneCount===scheduledToday.length) heroSub = '今天全部完成了!';
+    else heroSub = '再加把勁,快完成了。';
+  }
+
+  let listHtml = '';
+  if(active.length === 0){
+    listHtml = `
+      <div class="empty-state">
+        <div class="spot spot-lg"></div>
+        <h3>還沒有任何習慣</h3>
+        <p>新增一個開始吧。</p>
+        <button onclick="document.querySelector('[data-tab=settings]').click()">＋ 新增習慣</button>
+      </div>`;
+  }else{
+    listHtml = active.map(h=>renderTodayRow(h, t)).join('');
+  }
+
+  el.innerHTML = `
+    <div class="hero">
+      <div class="spot"></div>
+      <div class="date-meta">${dateMeta}</div>
+      ${scheduledToday.length ? `
+      <div class="hero-label">今日完成</div>
+      <div class="progress-line"><span class="frac">${doneCount}<span class="of"> / ${scheduledToday.length}</span></span></div>
+      <div class="hero-sub">${heroSub}</div>
+      <div class="track"><div class="fill" style="width:${pct}%"></div></div>` : `<div class="hero-sub" style="margin-top:0;">今天沒有排定的習慣</div>`}
+    </div>
+    <div>${listHtml}</div>
+  `;
+
+  el.querySelectorAll('[data-row-toggle]').forEach(row=>{
+    row.addEventListener('click', (e)=>{
+      if(e.target.closest('[data-skip]') || e.target.closest('[data-quick]') || e.target.closest('[data-manual-btn]') || e.target.closest('[data-expand]') || e.target.closest('input')) return;
+      toggleBooleanLike(row.dataset.rowToggle);
+    });
+  });
+  el.querySelectorAll('[data-skip]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{ e.stopPropagation(); toggleSkip(btn.dataset.skip); });
+  });
+  el.querySelectorAll('[data-quick]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{ e.stopPropagation(); addAmount(btn.dataset.quick, parseFloat(btn.dataset.amt)); });
+  });
+  el.querySelectorAll('[data-manual-btn]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const input = document.getElementById('detail-manual-'+btn.dataset.manualBtn);
+      const val = parseFloat(input.value);
+      if(!isNaN(val) && val !== 0){ addAmount(btn.dataset.manualBtn, val); input.value=''; }
+    });
+  });
+  el.querySelectorAll('[data-expand]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const id = btn.dataset.expand;
+      if(expandedRows.has(id)) expandedRows.delete(id); else expandedRows.add(id);
+      renderToday();
+    });
+  });
+  el.querySelectorAll('[data-delentry]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{ e.stopPropagation(); deleteEntry(btn.dataset.delentry, parseInt(btn.dataset.idx)); });
+  });
+  el.querySelectorAll('[data-markdone]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{ e.stopPropagation(); toggleBooleanLike(btn.dataset.markdone); });
+  });
+}
+
+function fmtTime(ts){ const d = new Date(ts); return pad(d.getHours())+':'+pad(d.getMinutes()); }
+
+function renderTodayRow(h, t){
+  const status = dayStatus(h, t);
+  const isDoneCls = (status === 'done') ? 'is-done' : '';
+  const isSkipCls = status === 'skipped' ? 'is-skipped' : '';
+  const isDim = (status === 'not_scheduled' || status === 'paused');
+  const expanded = expandedRows.has(h.id);
+  const color = habitColorFor(h);
+
+  if(isDim){
+    return `
+      <div class="habit-row dim">
+        <span class="badge" style="background:var(--${color})"></span>
+        <div class="info"><span class="name">${escapeHtml(h.name)}</span></div>
+        <span class="dim-tag">${status==='paused' ? '暫停' : '非執行日'}</span>
+      </div>`;
+  }
+
+  const log = getLog(h.id, t);
+  const skipBtn = `<button class="icon-btn skip-btn" data-skip="${h.id}" title="${status==='skipped'?'取消跳過':'跳過今天'}" aria-label="${status==='skipped'?'取消跳過':'跳過今天'}">${SKIP_ICON}</button>`;
+  const expandBtn = `<button class="icon-btn expand-btn ${expanded?'open':''}" data-expand="${h.id}" title="${expanded?'收合':'展開明細'}" aria-label="${expanded?'收合明細':'展開明細'}">${CHEVRON_ICON}</button>`;
+
+  if(h.type === 'boolean' || h.type === 'avoidance'){
+    const detail = expanded ? `
+      <div class="row-detail">
+        ${ (status==='done' && log && log.doneAt) ? `<div class="detail-line"><span>${fmtTime(log.doneAt)}　完成</span></div>` : `<div class="detail-line muted">尚未紀錄</div>` }
+        ${ status!=='done' ? `<button class="icon-text-btn" data-markdone="${h.id}">${PLUS_ICON}標記完成</button>` : '' }
+      </div>` : '';
+    const chkStyle = status==='done' ? `style="background:var(--${color});border-color:var(--${color})"` : '';
+    return `
+      <div class="habit-row ${isDoneCls} ${isSkipCls}">
+        <button class="checkbox ${status==='done'?'checked':''}" ${chkStyle} data-row-toggle="${h.id}" aria-label="${status==='done'?'標記為未完成':'標記為完成'}">${status==='done'?CHECK_ICON:''}</button>
+        <div class="info" data-row-toggle="${h.id}">
+          <span class="name">${escapeHtml(h.name)}</span>
+          ${status==='skipped' ? '<span class="skip-tag">跳過</span>' : ''}
+        </div>
+        <div class="row-actions">${skipBtn}${expandBtn}</div>
+        ${detail}
+      </div>`;
+  }
+
+  const amt = log ? (log.amount||0) : 0;
+  const goal = effectiveGoal(h, t);
+  const quickBtns = (h.quickAdds||[]).map(q=>`<button data-quick="${h.id}" data-amt="${q}">+${q}</button>`).join('');
+  const entries = (log && log.entries) || [];
+  const detail = expanded ? `
+    <div class="row-detail">
+      ${ entries.length ? entries.map((en,i)=>`<div class="detail-line"><span>${fmtTime(en.ts)}　${en.amt} ${escapeHtml(h.unit||'')}</span><button class="icon-btn del-entry" data-delentry="${h.id}" data-idx="${i}" title="刪除" aria-label="刪除這筆紀錄">${TRASH_ICON}</button></div>`).join('') : `<div class="detail-line muted">尚未紀錄</div>` }
+      <div class="add-entry-row">
+        <input type="number" placeholder="數量" id="detail-manual-${h.id}">
+        <button data-manual-btn="${h.id}" class="icon-text-btn">${PLUS_ICON}新增紀錄</button>
+      </div>
+    </div>` : '';
+  return `
+    <div class="habit-row qty-row ${isDoneCls} ${isSkipCls}">
+      <div class="qty-top">
+        <span class="badge" style="background:var(--${color})"></span>
+        <div class="info">
+          <span class="name">${escapeHtml(h.name)}</span>
+          ${status==='skipped' ? '<span class="skip-tag">跳過</span>' : ''}
+        </div>
+        <div class="row-actions">${skipBtn}${expandBtn}</div>
+      </div>
+      <div class="qty-progress"><span class="amt">${amt}</span>${goal? `<span class="goal">/ ${goal}</span>` : ''} <span class="unit">${escapeHtml(h.unit||'')}</span> ${status==='done'?`<span class="mini-check">${CHECK_ICON}</span>`:''}</div>
+      <div class="quick-chips">${quickBtns}</div>
+      ${detail}
+    </div>`;
+}
+
+async function toggleBooleanLike(habitId){
+  const t = todayStr();
+  if(!state.logs[habitId]) state.logs[habitId] = {};
+  const cur = state.logs[habitId][t];
+  const curStatus = cur ? cur.status : 'not_done';
+  const newStatus = curStatus==='done' ? 'not_done' : 'done';
+  state.logs[habitId][t] = { status: newStatus, amount:0, entries: [], doneAt: newStatus==='done' ? Date.now() : null };
+  renderToday();
+  await saveState();
+}
+async function toggleSkip(habitId){
+  const t = todayStr();
+  if(!state.logs[habitId]) state.logs[habitId] = {};
+  const cur = state.logs[habitId][t] || { status:'not_done', amount:0, entries:[] };
+  cur.status = (cur.status === 'skipped') ? 'not_done' : 'skipped';
+  state.logs[habitId][t] = cur;
+  renderToday();
+  await saveState();
+}
+async function addAmount(habitId, amount){
+  const t = todayStr();
+  if(!state.logs[habitId]) state.logs[habitId] = {};
+  if(!state.logs[habitId][t]) state.logs[habitId][t] = { status:'not_done', amount:0, entries: [] };
+  const log = state.logs[habitId][t];
+  log.amount = (log.amount||0) + amount;
+  log.entries = log.entries || [];
+  log.entries.push({ amt: amount, ts: Date.now() });
+  if(log.status === 'skipped') log.status = 'not_done';
+  renderToday();
+  await saveState();
+}
+async function deleteEntry(habitId, idx){
+  const t = todayStr();
+  const log = state.logs[habitId] && state.logs[habitId][t];
+  if(!log || !log.entries || !log.entries[idx]) return;
+  log.entries.splice(idx, 1);
+  log.amount = log.entries.reduce((sum,e)=>sum+(e.amt||0), 0);
+  renderToday();
+  await saveState();
+}
+
+/* ================= RECORDS (Dashboard first) ================= */
+function getWeekDates(offsetWeeks){
+  const today = new Date();
+  const dow = (today.getDay()+6)%7;
+  const monday = new Date(today); monday.setDate(today.getDate()-dow+(offsetWeeks*7));
+  const dates = []; for(let i=0;i<7;i++){ const d=new Date(monday); d.setDate(monday.getDate()+i); dates.push(d); }
+  return dates;
+}
+function weekChip(status, color){
+  if(status==='done') return `<div class="wk-chip-wrap"><span class="wk-chip" style="background:var(--${color})">✓</span></div>`;
+  if(status==='skipped') return '<div class="wk-chip-wrap"><span class="wk-chip skip">–</span></div>';
+  if(status==='not_done' || status==='partial') return '<div class="wk-chip-wrap"><span class="wk-chip miss"></span></div>';
+  return '<div class="wk-chip-wrap"><span class="wk-chip na"></span></div>';
+}
+function weekCompletion(h, weekDates){
+  const today = new Date();
+  let done=0, scheduled=0;
+  weekDates.forEach(d=>{
+    if(d>today) return;
+    const ds = fmt(d);
+    if(ds < h.startDate) return;
+    const s = dayStatus(h, ds);
+    if(passiveStatus(s)) return;
+    scheduled++;
+    if(s==='done') done++;
+  });
+  return { done, scheduled };
+}
+
+function renderRecords(){
+  const el = document.getElementById('tab-records');
+  if(state.habits.length === 0){
+    el.innerHTML = `<div class="empty-state"><h3>還沒有紀錄</h3><p>新增第一個習慣後,這裡會慢慢累積。</p></div>`;
+    return;
+  }
+  const visibleHabits = state.habits.filter(h=>h.status!=='deleted' && h.status!=='archived');
+  const activeHabits = state.habits.filter(h=>h.status==='active');
+  const thisWeek = getWeekDates(0);
+  const lastWeek = getWeekDates(-1);
+  const WD_LABELS = ['一','二','三','四','五','六','日'];
+  const todayDs = todayStr();
+
+  // Weekly headline: overall completion rate
+  let weekDone=0, weekScheduled=0, lastWeekDone=0, lastWeekScheduled=0;
+  const perHabitWeek = visibleHabits.map(h=>{
+    const w = weekCompletion(h, thisWeek);
+    weekDone += w.done; weekScheduled += w.scheduled;
+    const lw = weekCompletion(h, lastWeek);
+    lastWeekDone += lw.done; lastWeekScheduled += lw.scheduled;
+    return { habit:h, ...w };
+  });
+  const weekPct = weekScheduled ? Math.round(weekDone/weekScheduled*100) : null;
+  const lastWeekPct = lastWeekScheduled ? Math.round(lastWeekDone/lastWeekScheduled*100) : null;
+  const delta = (weekPct!==null && lastWeekPct!==null) ? weekPct - lastWeekPct : null;
+
+  const withData = perHabitWeek.filter(x=>x.scheduled>0);
+  let best=null, worst=null;
+  if(withData.length){
+    best = withData.reduce((a,b)=> (b.done/b.scheduled) > (a.done/a.scheduled) ? b : a);
+    worst = withData.reduce((a,b)=> (b.done/b.scheduled) < (a.done/a.scheduled) ? b : a);
+    if(withData.length < 2 || best.habit.id === worst.habit.id) worst = null;
+  }
+
+  // Category stats — only categories with at least one ACTIVE habit
+  const catMap = {};
+  activeHabits.forEach(h=>{
+    if(!h.category) return;
+    if(!catMap[h.category]) catMap[h.category] = { done:0, scheduled:0 };
+    const w = weekCompletion(h, thisWeek);
+    catMap[h.category].done += w.done;
+    catMap[h.category].scheduled += w.scheduled;
+  });
+  const categoryStats = Object.keys(catMap)
+    .map(id=>({ id, label:getCategoryLabel(id), pct: catMap[id].scheduled ? Math.round(catMap[id].done/catMap[id].scheduled*100) : null }))
+    .filter(c=>c.pct!==null && c.label);
+
+  // Cumulative per-habit completions (active + paused only)
+  const cumHabits = state.habits.filter(h=>h.status==='active' || h.status==='paused');
+  const cumData = cumHabits.map(h=>({ habit:h, done: calcLifetimeStats(h).done }));
+  const maxCum = Math.max(1, ...cumData.map(c=>c.done));
+
+  const headCols = thisWeek.map((d,i)=>{
+    const isToday = fmt(d)===todayDs;
+    return `<div class="wk-col-head ${isToday?'is-today':''}"><span class="wd">${WD_LABELS[i]}</span><span class="dd">${d.getDate()}</span></div>`;
+  }).join('');
+  const matrixRows = visibleHabits.map(h=>{
+    const color = habitColorFor(h);
+    const chips = thisWeek.map(d=>{
+      const ds = fmt(d);
+      if(d>new Date() || ds < h.startDate) return weekChip('na', color);
+      return weekChip(dayStatus(h, ds), color);
+    }).join('');
+    return `<div class="week-table-row"><div class="wk-name">${escapeHtml(h.name)}</div><div class="wk-cols">${chips}</div></div>`;
+  }).join('');
+
+  const historyHabits = state.habits.filter(h=>h.status!=='deleted');
+  if(!historySelectedHabit || !historyHabits.some(h=>h.id===historySelectedHabit)){
+    historySelectedHabit = historyHabits[0] ? historyHabits[0].id : null;
+  }
+
+  el.innerHTML = `
+    <div class="record-heading">紀錄</div>
+    <div class="record-subheading">我最近做得怎麼樣</div>
+
+    <div class="dash-card">
+      <div class="spot"></div>
+      <div class="cap">本週完成率</div>
+      <div class="num">${weekPct===null?'—':weekPct+'%'}</div>
+      ${delta!==null ? `<div class="delta ${delta>0?'up':(delta<0?'down':'flat')}">比上週 ${delta>0?'+':''}${delta}%</div>` : ''}
+    </div>
+
+    ${(best || worst) ? `
+    <div class="stat-pair">
+      ${best ? `<div class="stat-pill good"><div class="lbl">表現最好</div><div class="name">${escapeHtml(best.habit.name)}</div><div class="ratio">${best.done} / ${best.scheduled} 天</div></div>` : ''}
+      ${worst ? `<div class="stat-pill warn"><div class="lbl">需要加強</div><div class="name">${escapeHtml(worst.habit.name)}</div><div class="ratio">${worst.done} / ${worst.scheduled} 天</div></div>` : ''}
+    </div>` : ''}
+
+    ${categoryStats.length ? `
+    <div class="section-label">分類表現</div>
+    ${categoryStats.map(c=>`
+      <div class="cat-stat-row">
+        <div class="lbl">${escapeHtml(c.label)}</div>
+        <div class="track"><div class="fill" style="width:${c.pct}%"></div></div>
+        <div class="pct">${c.pct}%</div>
+      </div>`).join('')}
+    ` : ''}
+
+    ${cumData.length ? `
+    <div class="section-label">累積完成</div>
+    ${cumData.map(c=>{
+      const color = habitColorFor(c.habit);
+      const w = Math.round(c.done/maxCum*100);
+      return `<div class="cum-row">
+        <div class="lbl">${escapeHtml(c.habit.name)}</div>
+        <div class="track"><div class="fill" style="width:${w}%;background:var(--${color})"></div></div>
+        <div class="num">${c.done} 次</div>
+      </div>`;
+    }).join('')}
+    ` : ''}
+
+    <div class="section-label">這一週的每一天</div>
+    <div class="week-card">
+      <div class="week-head-row"><div class="wk-name"></div><div class="wk-cols">${headCols}</div></div>
+      ${matrixRows}
+    </div>
+
+    <div class="section-label">查看歷史</div>
+    <div class="habit-chips" id="historyHabitChips"></div>
+    <div class="cal-nav"><button id="calPrev">‹</button><div class="label" id="calLabel">—</div><button id="calNext">›</button></div>
+    <div><div class="cal-weekdays"><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div><div>日</div></div><div class="cal-days" id="calDays"></div></div>
+    <div id="dayDetailHost"></div>
+  `;
+
+  renderHistoryHabitChips();
+  renderCalendar();
+  document.getElementById('calPrev').addEventListener('click', ()=>{ calCursor.setMonth(calCursor.getMonth()-1); renderCalendar(); document.getElementById('dayDetailHost').innerHTML=''; });
+  document.getElementById('calNext').addEventListener('click', ()=>{ calCursor.setMonth(calCursor.getMonth()+1); renderCalendar(); document.getElementById('dayDetailHost').innerHTML=''; });
+}
+
+function renderHistoryHabitChips(){
+  const wrap = document.getElementById('historyHabitChips');
+  const list = state.habits.filter(h=>h.status!=='deleted');
+  wrap.innerHTML = list.map(h=>`<button data-h="${h.id}" class="${h.id===historySelectedHabit?'active':''}">${escapeHtml(h.name)}</button>`).join('');
+  wrap.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      historySelectedHabit = btn.dataset.h;
+      wrap.querySelectorAll('button').forEach(b=>b.classList.toggle('active', b===btn));
+      renderCalendar();
+      document.getElementById('dayDetailHost').innerHTML = '';
+    });
+  });
+}
+
+function renderCalendar(){
+  const label = document.getElementById('calLabel');
+  label.textContent = calCursor.getFullYear()+'年'+(calCursor.getMonth()+1)+'月';
+  const daysEl = document.getElementById('calDays');
+  const habit = state.habits.find(h=>h.id===historySelectedHabit);
+  if(!habit){ daysEl.innerHTML=''; return; }
+  const color = habitColorFor(habit);
+
+  const year = calCursor.getFullYear(), month = calCursor.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const startOffset = (firstDay.getDay()+6)%7;
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const t = todayStr();
+
+  let html = '';
+  for(let i=0;i<startOffset;i++) html += '<div class="cal-cell pad"></div>';
+  for(let d=1; d<=daysInMonth; d++){
+    const dateObj = new Date(year, month, d);
+    const ds = fmt(dateObj);
+    let cls = (ds===t) ? 'today' : '';
+    let dot = '';
+    if(ds >= habit.startDate && ds <= t && dayStatus(habit, ds)==='done'){
+      dot = `<span class="cal-dot" style="background:var(--${color})"></span>`;
+    }
+    html += `<div class="cal-cell ${cls}" data-day="${ds}"><span class="cal-d">${d}</span>${dot}</div>`;
+  }
+  daysEl.innerHTML = html;
+  daysEl.querySelectorAll('.cal-cell[data-day]').forEach(cell=>{
+    cell.addEventListener('click', ()=> showDayDetail(cell.dataset.day));
+  });
+}
+
+function showDayDetail(ds){
+  const host = document.getElementById('dayDetailHost');
+  const habit = state.habits.find(h=>h.id===historySelectedHabit);
+  if(!habit) return;
+  const d = parseDate(ds);
+  const color = habitColorFor(habit);
+
+  if(!isScheduledThatDay(habit, ds) || ds < habit.startDate){
+    host.innerHTML = `<div class="day-detail-panel"><div class="day-detail-date">${d.getMonth()+1} 月 ${d.getDate()} 日</div><div class="day-detail-habit"><span class="dd-dot" style="background:var(--${color})"></span>${escapeHtml(habit.name)}</div><div class="day-detail-empty">這天沒有排定</div></div>`;
+    return;
+  }
+  const s = dayStatus(habit, ds);
+  let statusTxt;
+  if(s==='skipped') statusTxt = '已跳過';
+  else if(habit.type==='boolean' || habit.type==='avoidance') statusTxt = s==='done' ? '✓ 完成' : '未完成';
+  else{
+    const log = getLog(habit.id, ds);
+    const amt = log ? (log.amount||0) : 0;
+    const goal = effectiveGoal(habit, ds);
+    statusTxt = amt + (goal? ' / '+goal : '') + ' ' + (habit.unit||'') + (s==='done'?' ✓':'');
+  }
+
+  let entriesHtml = '';
+  if(habit.type!=='boolean' && habit.type!=='avoidance' && s!=='skipped'){
+    const log = getLog(habit.id, ds);
+    const entries = (log && log.entries) || [];
+    if(entries.length){
+      entriesHtml = entries.map(en=>`<div class="day-detail-entry"><span>${fmtTime(en.ts)}</span><span>${en.amt} ${escapeHtml(habit.unit||'')}</span></div>`).join('');
+    }
+  }
+
+  host.innerHTML = `
+    <div class="day-detail-panel">
+      <div class="day-detail-date">${d.getMonth()+1} 月 ${d.getDate()} 日</div>
+      <div class="day-detail-habit"><span class="dd-dot" style="background:var(--${color})"></span>${escapeHtml(habit.name)}</div>
+      <div class="day-detail-status">${statusTxt}</div>
+      ${entriesHtml}
+    </div>`;
+}
+
+/* ================= SETTINGS ================= */
+function renderSettings(){
+  const el = document.getElementById('tab-settings');
+  const activeList = state.habits.filter(h=>h.status==='active');
+  const pausedList = state.habits.filter(h=>h.status==='paused');
+  const archivedList = state.habits.filter(h=>h.status==='archived');
+
+  el.innerHTML = `
+    <div class="section-label">習慣管理</div>
+    <div class="add-btn-row"><button id="openAddForm">＋ 新增習慣</button></div>
+    <div id="formHost"></div>
+    ${activeList.length? activeList.map(h=>habitManageRowHtml(h)).join('') : '<div style="color:var(--ink-muted);font-size:14px;padding:8px 2px;">還沒有進行中的習慣</div>'}
+    ${pausedList.length? `<div style="margin-top:6px;font-size:12px;color:var(--ink-muted);font-weight:700;">已暫停</div>${pausedList.map(h=>habitManageRowHtml(h)).join('')}` : ''}
+    ${archivedList.length? `<div style="margin-top:6px;font-size:12px;color:var(--ink-muted);font-weight:700;">已封存</div>${archivedList.map(h=>habitManageRowHtml(h)).join('')}` : ''}
+
+    <div class="section-label">分類</div>
+    <div class="add-btn-row small"><button id="addCategoryBtn">＋ 新增分類</button></div>
+    <div id="categoryList"></div>
+
+    <div class="section-label">資料</div>
+    <div class="settings-row">
+      <div><div class="lbl">匯出資料</div><div class="desc">匯出所有習慣與紀錄為 JSON 檔。</div></div>
+      <button id="exportBtn">匯出</button>
+    </div>
+    <div class="settings-row">
+      <div><div class="lbl">登出</div><div class="desc">登出後需重新登入。</div></div>
+      <button id="signOutBtn2">登出</button>
+    </div>
+  `;
+
+  document.getElementById('openAddForm').addEventListener('click', ()=> showHabitForm(null));
+  bindHabitManageActions(el);
+  renderCategoryList();
+  document.getElementById('addCategoryBtn').addEventListener('click', addCategory);
+  document.getElementById('exportBtn').addEventListener('click', exportData);
+  document.getElementById('signOutBtn2').addEventListener('click', () => signOut(auth));
+}
+
+function habitManageRowHtml(h){
+  const goal = h.configHistory && h.configHistory.length ? h.configHistory[h.configHistory.length-1].goal : null;
+  const days = (!h.executionDays || h.executionDays.length===0) ? '每天' : WEEKDAY_CHECKS.filter(w=>h.executionDays.includes(w.val)).map(w=>w.label).join('');
+  const metaBits = [];
+  if(goal !== null && goal !== undefined) metaBits.push(goal + (h.unit ? ' '+h.unit : ''));
+  else if(h.unit) metaBits.push(h.unit);
+  metaBits.push(days);
+  const color = habitColorFor(h);
+
+  let actions = '';
+  if(h.status === 'active'){
+    actions = `<button class="muted" data-pause="${h.id}">暫停</button><button data-edit="${h.id}">編輯</button><button class="muted" data-archive="${h.id}">封存</button><button class="danger" data-softdelete="${h.id}">刪除</button>`;
+  }else if(h.status === 'paused'){
+    actions = `<button data-resume="${h.id}">恢復</button><button data-edit="${h.id}">編輯</button><button class="muted" data-archive="${h.id}">封存</button><button class="danger" data-softdelete="${h.id}">刪除</button>`;
+  }else{
+    actions = `<button data-resume="${h.id}">取消封存</button><button class="danger" data-softdelete="${h.id}">刪除</button>`;
+  }
+  return `<div class="manage-row"><div class="info"><b><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--${color});margin-right:7px;"></span>${escapeHtml(h.name)}</b><div class="meta-line">${metaBits.map(escapeHtml).join(' · ')}</div></div><div class="link-actions">${actions}</div></div>`;
+}
+
+function bindHabitManageActions(el){
+  el.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click', ()=>{
+    const h = state.habits.find(x=>x.id===b.dataset.edit);
+    if(h) showHabitForm(h);
+  }));
+  el.querySelectorAll('[data-pause]').forEach(b=>b.addEventListener('click', async ()=>{
+    const h = state.habits.find(x=>x.id===b.dataset.pause);
+    if(!h) return;
+    const from = todayStr();
+    const to = prompt('暫停到哪一天?(YYYY-MM-DD)', addDaysStr(from,7));
+    if(!to) return;
+    h.status = 'paused'; h.pausedRanges = h.pausedRanges || [];
+    h.pausedRanges.push({ from, to });
+    renderAll(); await saveState();
+  }));
+  el.querySelectorAll('[data-resume]').forEach(b=>b.addEventListener('click', async ()=>{
+    const h = state.habits.find(x=>x.id===b.dataset.resume);
+    if(!h) return;
+    h.status = 'active';
+    renderAll(); await saveState();
+  }));
+  el.querySelectorAll('[data-archive]').forEach(b=>b.addEventListener('click', async ()=>{
+    const h = state.habits.find(x=>x.id===b.dataset.archive);
+    if(!h) return;
+    if(!confirm('封存「'+h.name+'」?紀錄會保留,可以取消封存。')) return;
+    h.status = 'archived';
+    renderAll(); await saveState();
+  }));
+  el.querySelectorAll('[data-softdelete]').forEach(b=>b.addEventListener('click', async ()=>{
+    const h = state.habits.find(x=>x.id===b.dataset.softdelete);
+    if(!h) return;
+    if(!confirm(`刪除「${h.name}」?刪除後將不再出現在習慣列表,歷史紀錄會保留。`)) return;
+    h.status = 'deleted';
+    if(historySelectedHabit===h.id) historySelectedHabit = null;
+    renderAll(); await saveState();
+  }));
+}
+function addDaysStr(dateStr, n){ const d = parseDate(dateStr); d.setDate(d.getDate()+n); return fmt(d); }
+
+function categoryOptionsHtml(selectedId){
+  const opts = state.categories.filter(c=>!c.disabled || c.id===selectedId)
+    .map(c=>`<option value="${c.id}" ${c.id===selectedId?'selected':''}>${escapeHtml(c.label)}</option>`).join('');
+  return `<option value="" ${!selectedId?'selected':''}>不指定</option>` + opts;
+}
+
+function showHabitForm(habit){
+  editingHabitId = habit ? habit.id : null;
+  const host = document.getElementById('formHost');
+  const goal = habit ? (habit.configHistory && habit.configHistory.length ? habit.configHistory[habit.configHistory.length-1].goal : null) : null;
+  const defaultType = habit ? habit.type : 'boolean';
+  const defaultCategory = habit ? (habit.category||'') : '';
+
+  host.innerHTML = `
+    <div class="form-panel">
+      <h3>${habit ? '編輯習慣' : '新增習慣'}</h3>
+      <div class="field"><label>名稱</label><input id="fName" value="${habit?escapeHtml(habit.name):''}" placeholder="例如:喝水"></div>
+      <div class="field">
+        <label>類型</label>
+        <div class="type-picker" id="typePicker">
+          ${TYPE_LIST.map(t=>`
+            <label class="type-option ${t.key===defaultType?'tp-checked':''}">
+              <input type="radio" name="fType" value="${t.key}" ${t.key===defaultType?'checked':''}>
+              <div><b>${escapeHtml(t.label)}</b><span>${escapeHtml(t.desc)}</span></div>
+            </label>`).join('')}
+        </div>
+      </div>
+      <div class="field"><label>分類</label><select id="fCategory">${categoryOptionsHtml(defaultCategory)}</select></div>
+      <div id="quantFields">
+        <div class="field-row">
+          <div class="field"><label>單位</label><input id="fUnit" value="${habit&&habit.unit?escapeHtml(habit.unit):''}" placeholder="例如:ml、分鐘"></div>
+          <div class="field"><label>目標(可留空)</label><input id="fGoal" type="number" value="${goal??''}" placeholder="例如:2000"></div>
+        </div>
+        <div class="field"><label>快速加量</label><input id="fQuick" value="${habit&&habit.quickAdds?habit.quickAdds.join(','):''}" placeholder="例如:100,250,500"><div class="hint">逗號分開,最多4個</div></div>
+      </div>
+      <details class="adv">
+        <summary>進階設定</summary>
+        <div class="adv-body">
+          <div class="field"><label>執行日</label>
+            <div class="daypick" id="dayPick">${WEEKDAY_CHECKS.map(w=>`<label class="${habit&&habit.executionDays&&habit.executionDays.includes(w.val)?'dc-on':''}"><input type="checkbox" class="dayChk" value="${w.val}" ${habit&&habit.executionDays&&habit.executionDays.includes(w.val)?'checked':''}><span>${w.label}</span></label>`).join('')}</div>
+            <div class="hint">不選 = 每天</div>
+          </div>
+          <div class="field"><label>開始日期</label><input id="fStart" type="date" value="${habit?habit.startDate:todayStr()}"></div>
+          <div class="field"><label>備註</label><textarea id="fNote">${habit&&habit.note?escapeHtml(habit.note):''}</textarea></div>
+        </div>
+      </details>
+      <div class="form-actions">
+        <button class="primary" id="saveHabitBtn">${habit?'儲存':'新增'}</button>
+        <button class="ghost" id="cancelFormBtn">取消</button>
+      </div>
+    </div>`;
+
+  function syncTypeVisibility(){
+    const t = document.querySelector('input[name="fType"]:checked').value;
+    document.getElementById('quantFields').style.display = (t==='boolean'||t==='avoidance') ? 'none' : 'block';
+  }
+  document.querySelectorAll('input[name="fType"]').forEach(r=>r.addEventListener('change', (e)=>{
+    document.querySelectorAll('#typePicker .type-option').forEach(opt=>opt.classList.remove('tp-checked'));
+    e.target.closest('.type-option').classList.add('tp-checked');
+    syncTypeVisibility();
+  }));
+  syncTypeVisibility();
+
+  document.querySelectorAll('#dayPick .dayChk').forEach(chk=>chk.addEventListener('change', (e)=>{
+    e.target.closest('label').classList.toggle('dc-on', e.target.checked);
+  }));
+
+  document.getElementById('cancelFormBtn').addEventListener('click', ()=>{ editingHabitId=null; host.innerHTML=''; });
+  document.getElementById('saveHabitBtn').addEventListener('click', async ()=>{
+    const name = document.getElementById('fName').value.trim();
+    if(!name){ document.getElementById('fName').focus(); return; }
+    const type = document.querySelector('input[name="fType"]:checked').value;
+    const category = document.getElementById('fCategory').value;
+    const unit = document.getElementById('fUnit').value.trim();
+    const goalRaw = document.getElementById('fGoal').value.trim();
+    const goalVal = goalRaw ? parseFloat(goalRaw) : null;
+    const quickRaw = document.getElementById('fQuick').value.trim();
+    const quickAdds = quickRaw ? quickRaw.split(',').map(s=>parseFloat(s.trim())).filter(n=>!isNaN(n)).slice(0,4) : [];
+    const executionDays = Array.from(document.querySelectorAll('.dayChk:checked')).map(c=>parseInt(c.value));
+    const startDate = document.getElementById('fStart').value || todayStr();
+    const note = document.getElementById('fNote').value.trim();
+
+    if(editingHabitId){
+      const h = state.habits.find(x=>x.id===editingHabitId);
+      h.name = name; h.type = type; h.category = category; h.unit = unit;
+      h.executionDays = executionDays; h.startDate = startDate; h.note = note;
+      if(quickAdds.length) h.quickAdds = quickAdds;
+      h.configHistory = h.configHistory || [];
+      const lastGoal = h.configHistory.length ? h.configHistory[h.configHistory.length-1].goal : null;
+      if(lastGoal !== goalVal){ h.configHistory.push({ effectiveFrom: todayStr(), goal: goalVal }); }
+    }else{
+      state.habits.push({
+        id: 'hb_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
+        name, type, category, unit, quickAdds, executionDays, startDate, note,
+        status: 'active', pausedRanges: [],
+        configHistory: [{ effectiveFrom: startDate, goal: goalVal }]
+      });
+    }
+    editingHabitId = null; host.innerHTML = '';
+    renderAll(); await saveState();
+  });
+}
+
+/* ---- Category management ---- */
+function countHabitsUsingCategory(id){ return state.habits.filter(h=>h.category===id && h.status!=='deleted').length; }
+async function addCategory(){
+  const val = prompt('新分類名稱');
+  if(!val || !val.trim()) return;
+  state.categories.push({ id: 'cat_'+Date.now()+'_'+Math.random().toString(36).slice(2,5), label: val.trim(), disabled:false });
+  renderSettings(); await saveState();
+}
+function renderCategoryList(){
+  const host = document.getElementById('categoryList');
+  if(state.categories.length === 0){
+    host.innerHTML = '<div style="color:var(--ink-muted);font-size:14px;padding:8px 2px;">還沒有分類</div>';
+    return;
+  }
+  host.innerHTML = state.categories.map((c,i)=>`
+    <div class="manage-row ${c.disabled?'disabled':''}">
+      <div class="info"><b>${escapeHtml(c.label)}</b></div>
+      <div class="link-actions">
+        ${i>0?`<button class="muted" data-cup="${c.id}">↑</button>`:''}
+        ${i<state.categories.length-1?`<button class="muted" data-cdown="${c.id}">↓</button>`:''}
+        <button data-crename="${c.id}">重新命名</button>
+        <button class="muted" data-ctoggle="${c.id}">${c.disabled?'啟用':'停用'}</button>
+        <button class="danger" data-cdelete="${c.id}">刪除</button>
+      </div>
+    </div>`).join('');
+
+  host.querySelectorAll('[data-crename]').forEach(b=>b.addEventListener('click', async ()=>{
+    const c = state.categories.find(x=>x.id===b.dataset.crename);
+    const val = prompt('重新命名分類', c.label);
+    if(val && val.trim()){ c.label = val.trim(); renderSettings(); renderAll(); await saveState(); }
+  }));
+  host.querySelectorAll('[data-ctoggle]').forEach(b=>b.addEventListener('click', async ()=>{
+    const c = state.categories.find(x=>x.id===b.dataset.ctoggle);
+    c.disabled = !c.disabled;
+    renderSettings(); await saveState();
+  }));
+  host.querySelectorAll('[data-cup]').forEach(b=>b.addEventListener('click', async ()=>{
+    const i = state.categories.findIndex(x=>x.id===b.dataset.cup);
+    if(i>0){ [state.categories[i-1],state.categories[i]]=[state.categories[i],state.categories[i-1]]; renderSettings(); await saveState(); }
+  }));
+  host.querySelectorAll('[data-cdown]').forEach(b=>b.addEventListener('click', async ()=>{
+    const i = state.categories.findIndex(x=>x.id===b.dataset.cdown);
+    if(i<state.categories.length-1){ [state.categories[i+1],state.categories[i]]=[state.categories[i],state.categories[i+1]]; renderSettings(); await saveState(); }
+  }));
+  host.querySelectorAll('[data-cdelete]').forEach(b=>b.addEventListener('click', async ()=>{
+    const id = b.dataset.cdelete;
+    const c = state.categories.find(x=>x.id===id);
+    const count = countHabitsUsingCategory(id);
+    if(count > 0){
+      const others = state.categories.filter(x=>x.id!==id).map(x=>x.label).join('、');
+      const target = prompt(`「${c.label}」目前有 ${count} 個習慣使用。\n請輸入要改指定的分類名稱(從:${others || '無其他分類'} 中選一個),或留空讓這些習慣變成不指定分類:`);
+      if(target === null) return;
+      if(target.trim()){
+        const matched = state.categories.find(x=>x.label === target.trim() && x.id !== id);
+        if(!matched){ alert('找不到這個分類名稱,請確認拼字。'); return; }
+        state.habits.forEach(h=>{ if(h.category===id) h.category = matched.id; });
+      }else{
+        state.habits.forEach(h=>{ if(h.category===id) h.category = ''; });
+      }
+    }else{
+      if(!confirm(`刪除「${c.label}」這個分類?`)) return;
+    }
+    state.categories = state.categories.filter(x=>x.id!==id);
+    renderSettings(); renderAll(); await saveState();
+  }));
+}
+
+function exportData(){
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type:'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'habit-tracker_'+todayStr()+'.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ================= Render all ================= */
+function renderAll(){
+  renderToday();
+  if(document.getElementById('tab-records').classList.contains('active')) renderRecords();
+  if(document.getElementById('tab-settings').classList.contains('active')) renderSettings();
+}
+</script>
+</body>
+</html>  header.top{ display:flex; align-items:center; justify-content:space-between; margin-bottom: 20px; }
   header.top .brand{ display:flex; align-items:center; gap:9px; }
   header.top .brand .spot{ width:24px; height:24px; }
   header.top .brand h1{ font-size:18px; font-weight:900; margin:0; }
