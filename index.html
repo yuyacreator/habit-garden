@@ -11,22 +11,22 @@
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
 
   :root{
-    --paper: #FCFBF7;
+    --paper: #FDFDFB;
     --surface: #FFFFFF;
     --ink: #2E2A22;
     --ink-muted: #8B8477;
-    --moss: #2FA35F;
+    --moss: #8FB89C;
     --moss-dim: #E4F5EA;
-    --sky: #4AAEDB;
+    --sky: #93BAD1;
     --sky-dim: #E6F4FB;
-    --teal: #2AA79E;
-    --coral: #FF7A59;
+    --teal: #8FBAB4;
+    --coral: #E3A98F;
     --coral-dim: #FFEBE4;
-    --berry: #E0577A;
-    --lilac: #8B7FD1;
+    --berry: #CB93A6;
+    --lilac: #ADA3D0;
     --sun: #FFCB3D;
     --sun-dim: #FFF9E5;
-    --border: #E9E4D5;
+    --border: #ECE8DC;
   }
   *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
   html{ height:100%; }
@@ -118,12 +118,13 @@
   .quick-chips{ grid-column: 1 / -1; display:flex; gap:6px; flex-wrap:wrap; }
   .quick-chips button{ background: var(--sky-dim); color:#276a8c; border:none; border-radius:8px; padding:7px 13px; font-size:13px; font-weight:700; cursor:pointer; }
 
-  .row-detail{ grid-column: 1 / -1; padding-top:6px; }
-  .entries-inline{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
-  .entry-chip{ background: var(--paper); border:1px solid var(--border); border-radius:999px; padding:5px 11px; font-size:12.5px; color: var(--ink-muted); cursor:pointer; }
-  .entry-chip:active{ background: var(--coral-dim); border-color: var(--coral); color:#c15a3d; }
+  .row-detail{ grid-column: 1 / -1; padding-top:4px; }
+  .entries-inline{ display:flex; flex-wrap:wrap; align-items:center; column-gap:5px; row-gap:2px; }
+  .entry-chip{ background:none; border:none; padding:2px 1px; font-size:13px; color: var(--ink-muted); cursor:pointer; }
+  .entry-chip:active{ color: var(--coral); text-decoration: line-through; }
+  .entry-sep{ color: var(--border); font-size:13px; }
   .entries-inline .muted{ font-size:13px; color: var(--ink-muted); }
-  .add-entry-inline{ display:flex; gap:6px; align-items:center; margin-top:8px; }
+  .add-entry-inline{ display:flex; gap:6px; align-items:center; margin-top:6px; }
   .add-entry-inline input{ width:76px; border:1px solid var(--border); border-radius:8px; padding:7px; background:var(--paper); }
   .add-entry-inline button{ background: var(--sun-dim); color:#8a6a1a; border:none; border-radius:8px; padding:7px 12px; font-size:12.5px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px; }
   .add-entry-inline button svg{ width:12px; height:12px; }
@@ -263,6 +264,7 @@
   .cal-cell{
     aspect-ratio:0.85;
     display:grid;
+    grid-template-columns: 1fr;
     grid-template-rows: 1fr auto;
     justify-items:center;
     align-items:center;
@@ -274,8 +276,8 @@
     color: var(--ink-muted);
   }
   .cal-cell.pad{ border-color:transparent; cursor:default; }
-  .cal-cell .cal-d{ font-weight:700; align-self:end; }
-  .cal-cell .cal-dot-holder{ min-height:12px; display:flex; align-items:center; justify-content:center; gap:2px; flex-wrap:wrap; max-width:34px; }
+  .cal-cell .cal-d{ font-weight:700; align-self:end; width:100%; text-align:center; }
+  .cal-cell .cal-dot-holder{ width:100%; min-height:12px; display:flex; align-items:center; justify-content:center; gap:2px; flex-wrap:wrap; }
   .cal-cell .cal-dot{ width:11px; height:11px; border-radius:50%; }
   .cal-cell .cal-dot.mini{ width:6px; height:6px; }
   .cal-cell .cal-more{ font-size:9px; color: var(--ink-muted); font-weight:700; }
@@ -682,7 +684,7 @@ function renderTodayRow(h, t){
   const entries = (log && log.entries) || [];
   let entriesInline = '';
   if(entries.length){
-    entriesInline = entries.map((en,i)=>`<button class="entry-chip" data-delentry="${h.id}" data-idx="${i}">${fmtTime(en.ts)} ${i===0?en.amt:'+'+en.amt}</button>`).join('');
+    entriesInline = entries.map((en,i)=>`<button class="entry-chip" data-delentry="${h.id}" data-idx="${i}">${fmtTime(en.ts)} ${i===0?en.amt:'+'+en.amt}</button>`).join('<span class="entry-sep">·</span>');
   }
   const detail = expanded ? `
     <div class="row-detail">
@@ -695,7 +697,7 @@ function renderTodayRow(h, t){
       </div>
     </div>` : '';
   return `
-    <div class="habit-row dim-false" style="grid-template-rows:auto auto auto ${expanded?'auto':''};">
+    <div class="habit-row qty-row">
       <span class="badge" style="background:var(--${color})"></span>
       <div class="info">
         <span class="name">${escapeHtml(h.name)}</span>
