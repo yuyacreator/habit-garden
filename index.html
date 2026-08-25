@@ -93,7 +93,7 @@
   .habit-row.dim{ opacity:0.45; grid-template-columns: 28px 1fr auto; }
   .habit-row .badge{ grid-column:1; width:12px; height:12px; border-radius:50%; justify-self:center; }
   .habit-row .info{ grid-column:2; min-width:0; display:flex; align-items:center; flex-wrap:wrap; column-gap:8px; row-gap:4px; cursor:pointer; }
-  .quick-chips-inline{ display:flex; gap:5px; margin-left:auto; flex-wrap:wrap; cursor:default; }
+  .quick-chips-inline{ display:flex; gap:5px; flex-wrap:wrap; flex-basis:100%; margin-top:2px; cursor:default; }
   .qty-row .info{ cursor:default; }
   .habit-row .name{ font-weight:700; font-size:17px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .habit-row .dim-tag{ grid-column:3; font-size:12px; color: var(--ink-muted); justify-self:end; white-space:nowrap; }
@@ -112,27 +112,24 @@
   .expand-btn svg{ transition: transform .15s ease; }
   .expand-btn.open svg{ transform: rotate(180deg); }
 
-  .qty-progress{ grid-column: 1 / -1; font-size:26px; font-weight:900; color: var(--ink); display:flex; align-items:baseline; gap:5px; padding-left:0; }
-  .qty-progress .goal{ font-size:16px; font-weight:700; color: var(--ink-muted); }
-  .qty-progress .unit{ font-size:14px; font-weight:600; color: var(--ink-muted); }
-  .qty-progress .mini-check{ width:18px; height:18px; color: var(--moss); }
-  .qty-progress .mini-check svg{ width:100%; height:100%; }
+  .qty-inline{ margin-left:auto; font-weight:900; font-size:15.5px; color: var(--ink); display:flex; align-items:baseline; gap:4px; white-space:nowrap; }
+  .qty-inline .goal{ font-size:12.5px; font-weight:700; color: var(--ink-muted); }
+  .qty-inline .unit{ font-size:12px; font-weight:600; color: var(--ink-muted); }
+  .qty-inline .mini-check{ width:14px; height:14px; color: var(--moss); }
+  .qty-inline .mini-check svg{ width:100%; height:100%; }
   .quick-chips{ grid-column: 1 / -1; display:flex; gap:6px; flex-wrap:wrap; }
   .quick-chips-inline button, .quick-chips button{ background: var(--sky-dim); color:#276a8c; border:none; border-radius:8px; padding:6px 11px; font-size:12.5px; font-weight:700; cursor:pointer; }
 
-  .row-detail{ grid-column: 1 / -1; padding-top:4px; }
-  .entries-inline{ display:flex; flex-wrap:wrap; align-items:center; column-gap:5px; row-gap:2px; }
-  .entry-chip{ background:none; border:none; padding:2px 1px; font-size:13px; color: var(--ink-muted); cursor:pointer; }
-  .entry-chip:active{ color: var(--coral); text-decoration: line-through; }
-  .entry-sep{ color: var(--border); font-size:13px; }
-  .entries-inline .muted{ font-size:13px; color: var(--ink-muted); }
-  .add-entry-inline{ display:flex; gap:6px; align-items:center; margin-top:6px; }
+  .row-detail{ grid-column: 1 / -1; padding-top:6px; }
+  .detail-line{ display:flex; justify-content:space-between; align-items:center; font-size:13.5px; padding:5px 0; border-bottom:1px solid var(--border); }
+  .detail-line:last-child{ border-bottom:none; }
+  .detail-muted{ font-size:13px; color: var(--ink-muted); padding:4px 0; }
+  .add-entry-inline{ display:flex; gap:6px; align-items:center; margin-top:8px; }
   .add-entry-inline input{ width:76px; border:1px solid var(--border); border-radius:8px; padding:7px; background:var(--paper); }
   .add-entry-inline button{ background: var(--sun-dim); color:#8a6a1a; border:none; border-radius:8px; padding:7px 12px; font-size:12.5px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px; }
   .add-entry-inline button svg{ width:12px; height:12px; }
   .mark-done-inline{ display:inline-flex; align-items:center; gap:5px; background: var(--sun-dim); color:#8a6a1a; border:none; border-radius:8px; padding:7px 13px; font-size:12.5px; font-weight:700; cursor:pointer; }
   .mark-done-inline svg{ width:12px; height:12px; }
-  .detail-muted{ font-size:13px; color: var(--ink-muted); }
 
   .empty-state{ text-align:center; padding: 56px 20px; color: var(--ink-muted); }
   .empty-state .spot-lg{ width:72px; height:72px; margin: 0 auto 16px; }
@@ -267,19 +264,19 @@
     aspect-ratio:0.85;
     display:grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 1fr auto;
+    grid-template-rows: auto 1fr;
     justify-items:center;
     align-items:center;
     border:1.5px solid var(--border);
     border-radius:10px;
     cursor:pointer;
-    padding:6px 2px 8px;
+    padding:7px 2px 6px;
     font-size:12.5px;
     color: var(--ink-muted);
   }
   .cal-cell.pad{ border-color:transparent; cursor:default; }
-  .cal-cell .cal-d{ font-weight:700; align-self:end; width:100%; text-align:center; }
-  .cal-cell .cal-dot-holder{ width:100%; min-height:12px; display:flex; align-items:center; justify-content:center; gap:2px; flex-wrap:wrap; }
+  .cal-cell .cal-d{ font-weight:700; align-self:start; width:100%; text-align:center; }
+  .cal-cell .cal-dot-holder{ width:100%; height:100%; display:flex; align-items:center; justify-content:center; gap:2px; flex-wrap:wrap; }
   .cal-cell .cal-dot{ width:11px; height:11px; border-radius:50%; }
   .cal-cell .cal-dot.mini{ width:6px; height:6px; }
   .cal-cell .cal-more{ font-size:9px; color: var(--ink-muted); font-weight:700; }
@@ -538,6 +535,7 @@ function calcLifetimeStats(habit){
 const CHECK_ICON = `<svg viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const CHEVRON_ICON = `<svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const PLUS_ICON = `<svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+const TRASH_ICON = `<svg viewBox="0 0 24 24" fill="none"><path d="M5 7h14M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2m-8 0v12a1 1 0 001 1h6a1 1 0 001-1V7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const SKIP_ICON = `<svg viewBox="0 0 24 24" fill="none"><path d="M6 5l9 7-9 7V5z" fill="currentColor"/><rect x="17" y="5" width="2.2" height="14" fill="currentColor"/></svg>`;
 
 /* ---------- Tabs ---------- */
@@ -684,15 +682,9 @@ function renderTodayRow(h, t){
   const goal = effectiveGoal(h, t);
   const quickBtns = (h.quickAdds||[]).map(q=>`<button data-quick="${h.id}" data-amt="${q}">+${q}</button>`).join('');
   const entries = (log && log.entries) || [];
-  let entriesInline = '';
-  if(entries.length){
-    entriesInline = entries.map((en,i)=>`<button class="entry-chip" data-delentry="${h.id}" data-idx="${i}">${fmtTime(en.ts)} ${i===0?en.amt:'+'+en.amt}</button>`).join('<span class="entry-sep">·</span>');
-  }
   const detail = expanded ? `
     <div class="row-detail">
-      <div class="entries-inline">
-        ${entriesInline || '<span class="muted">尚未紀錄</span>'}
-      </div>
+      ${ entries.length ? entries.map((en,i)=>`<div class="detail-line"><span>${fmtTime(en.ts)}　${en.amt} ${escapeHtml(h.unit||'')}</span><button class="icon-btn del-entry" data-delentry="${h.id}" data-idx="${i}" title="刪除" aria-label="刪除這筆紀錄">${TRASH_ICON}</button></div>`).join('') : `<div class="detail-muted">尚未紀錄</div>` }
       <div class="add-entry-inline">
         <input type="number" placeholder="數量" id="detail-manual-${h.id}">
         <button data-manual-btn="${h.id}">${PLUS_ICON}新增</button>
@@ -704,10 +696,10 @@ function renderTodayRow(h, t){
       <div class="info">
         <span class="name">${escapeHtml(h.name)}</span>
         ${status==='skipped' ? '<span class="skip-tag">跳過</span>' : ''}
+        <span class="qty-inline"><span class="amt">${amt}</span>${goal? `<span class="goal">/${goal}</span>` : ''}<span class="unit">${escapeHtml(h.unit||'')}</span>${status==='done'?`<span class="mini-check">${CHECK_ICON}</span>`:''}</span>
         ${quickBtns ? `<div class="quick-chips-inline">${quickBtns}</div>` : ''}
       </div>
       ${skipBtn}${expandBtn}
-      <div class="qty-progress"><span class="amt">${amt}</span>${goal? `<span class="goal">/ ${goal}</span>` : ''} <span class="unit">${escapeHtml(h.unit||'')}</span> ${status==='done'?`<span class="mini-check">${CHECK_ICON}</span>`:''}</div>
       ${detail}
     </div>`;
 }
