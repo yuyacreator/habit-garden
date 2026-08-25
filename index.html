@@ -82,7 +82,7 @@
   /* ---------- Habit row: CSS Grid, fixed columns, no layout shift ---------- */
   .habit-row{
     display:grid;
-    grid-template-columns: 28px 1fr 34px 34px;
+    grid-template-columns: 14px 1fr 34px;
     align-items:center;
     column-gap:10px;
     row-gap:8px;
@@ -90,35 +90,30 @@
     border-bottom: 1px solid var(--border);
   }
   .habit-row:last-child{ border-bottom:none; }
-  .habit-row.dim{ opacity:0.45; grid-template-columns: 28px 1fr auto; }
-  .habit-row .badge{ grid-column:1; width:12px; height:12px; border-radius:50%; justify-self:center; align-self:start; margin-top:6px; }
-  .habit-row .info{ grid-column:2; min-width:0; display:flex; align-items:center; flex-wrap:wrap; column-gap:8px; row-gap:4px; cursor:pointer; }
+  .habit-row.dim{ opacity:0.45; grid-template-columns: 14px 1fr auto; }
+  .habit-row .badge{ grid-column:1; width:11px; height:11px; border-radius:50%; justify-self:center; align-self:start; margin-top:7px; }
+  .habit-row .info{ grid-column:2; min-width:0; display:flex; align-items:center; flex-wrap:wrap; column-gap:8px; row-gap:5px; cursor:pointer; }
   .quick-chips-inline{ display:flex; gap:5px; flex-wrap:wrap; flex-basis:100%; margin-top:2px; cursor:default; }
   .qty-row .info{ cursor:default; }
   .habit-row .name{ font-weight:700; font-size:17px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .habit-row .dim-tag{ grid-column:3; font-size:12px; color: var(--ink-muted); justify-self:end; white-space:nowrap; }
-  .habit-row .skip-tag{ font-size:11.5px; color: var(--coral); font-weight:700; flex-shrink:0; }
 
-  .checkbox{ grid-column:1; align-self:start; width:28px; height:28px; border:2.5px solid var(--border); border-radius:9px; background:var(--surface); cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; transition: background .12s ease, border-color .12s ease, transform .12s ease; }
-  .checkbox svg{ width:17px; height:17px; color:#fff; }
-  .checkbox.checked{ transform: scale(1.05); }
+  /* checkbox — inline after the title, sized to match text */
+  .inline-check{ width:22px; height:22px; flex-shrink:0; border:2px solid var(--border); border-radius:7px; background:var(--surface); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; padding:0; }
+  .inline-check svg{ width:13px; height:13px; color:#fff; }
+  span.inline-check{ cursor:default; }
 
-  .skip-btn{ grid-column:3; align-self:start; }
-  .expand-btn{ grid-column:4; align-self:start; }
+  .expand-btn{ grid-column:3; align-self:start; }
   .icon-btn{ width:34px; height:34px; border:none; background:none; color: var(--ink-muted); opacity:0.55; cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:8px; padding:0; justify-self:center; }
   .icon-btn:active{ opacity:1; background: var(--sun-dim); }
   .icon-btn svg{ width:16px; height:16px; }
-  .skip-btn svg{ width:14px; height:14px; }
   .expand-btn svg{ transition: transform .15s ease; }
   .expand-btn.open svg{ transform: rotate(180deg); }
 
-  .qty-inline{ margin-left:auto; font-weight:900; font-size:15.5px; color: var(--ink); display:flex; align-items:center; gap:4px; white-space:nowrap; }
-  .qty-inline .goal{ font-size:12.5px; font-weight:700; color: var(--ink-muted); }
-  .qty-inline .unit{ font-size:12px; font-weight:600; color: var(--ink-muted); }
-  .qty-inline .mini-check{ width:14px; height:14px; color: var(--moss); }
-  .qty-inline .mini-check svg{ width:100%; height:100%; }
-  .quick-chips{ grid-column: 1 / -1; display:flex; gap:6px; flex-wrap:wrap; }
-  .quick-chips-inline button, .quick-chips button{ background: var(--sky-dim); color:#276a8c; border:none; border-radius:8px; padding:6px 11px; font-size:12.5px; font-weight:700; cursor:pointer; }
+  .qty-inline{ margin-left:auto; font-weight:700; font-size:15px; color: var(--ink); display:flex; align-items:center; gap:3px; white-space:nowrap; }
+  .qty-inline .goal{ font-size:15px; font-weight:500; color: var(--ink-muted); }
+  .qty-inline .unit{ font-size:15px; font-weight:500; color: var(--ink-muted); }
+  .quick-chips-inline button{ background: var(--sky-dim); color:#276a8c; border:none; border-radius:8px; padding:6px 11px; font-size:12.5px; font-weight:700; cursor:pointer; }
 
   .row-detail{ grid-column: 1 / -1; padding-top:6px; }
   .detail-line{ display:flex; justify-content:space-between; align-items:center; font-size:13.5px; padding:5px 0; border-bottom:1px solid var(--border); }
@@ -128,8 +123,6 @@
   .add-entry-inline input{ width:76px; border:1px solid var(--border); border-radius:8px; padding:7px; background:var(--paper); }
   .add-entry-inline button{ background: var(--sun-dim); color:#8a6a1a; border:none; border-radius:8px; padding:7px 12px; font-size:12.5px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px; }
   .add-entry-inline button svg{ width:12px; height:12px; }
-  .mark-done-inline{ display:inline-flex; align-items:center; gap:5px; background: var(--sun-dim); color:#8a6a1a; border:none; border-radius:8px; padding:7px 13px; font-size:12.5px; font-weight:700; cursor:pointer; }
-  .mark-done-inline svg{ width:12px; height:12px; }
 
   .empty-state{ text-align:center; padding: 56px 20px; color: var(--ink-muted); }
   .empty-state .spot-lg{ width:72px; height:72px; margin: 0 auto 16px; }
@@ -535,8 +528,7 @@ function calcLifetimeStats(habit){
 const CHECK_ICON = `<svg viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const CHEVRON_ICON = `<svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const PLUS_ICON = `<svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
-const TRASH_ICON = `<svg viewBox="0 0 24 24" fill="none"><path d="M5 7h14M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2m-8 0v12a1 1 0 001 1h6a1 1 0 001-1V7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-const SKIP_ICON = `<svg viewBox="0 0 24 24" fill="none"><path d="M6 5l9 7-9 7V5z" fill="currentColor"/><rect x="17" y="5" width="2.2" height="14" fill="currentColor"/></svg>`;
+const TRASH_ICON = `<svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9.5 7V4.8c0-.4.4-.8.9-.8h3.2c.5 0 .9.4.9.8V7m2.4 0-.8 12.2a2 2 0 01-2 1.8H8.8a2 2 0 01-2-1.8L6 7h12z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 10.8v6.4M14 10.8v6.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`;
 
 /* ---------- Tabs ---------- */
 document.querySelectorAll('nav.tabs button').forEach(btn=>{
@@ -598,12 +590,9 @@ function renderToday(){
 
   el.querySelectorAll('[data-row-toggle]').forEach(row=>{
     row.addEventListener('click', (e)=>{
-      if(e.target.closest('[data-skip]') || e.target.closest('[data-quick]') || e.target.closest('[data-manual-btn]') || e.target.closest('[data-expand]') || e.target.closest('input')) return;
+      if(e.target.closest('[data-quick]') || e.target.closest('[data-manual-btn]') || e.target.closest('[data-expand]') || e.target.closest('input')) return;
       toggleBooleanLike(row.dataset.rowToggle);
     });
-  });
-  el.querySelectorAll('[data-skip]').forEach(btn=>{
-    btn.addEventListener('click', (e)=>{ e.stopPropagation(); toggleSkip(btn.dataset.skip); });
   });
   el.querySelectorAll('[data-quick]').forEach(btn=>{
     btn.addEventListener('click', (e)=>{ e.stopPropagation(); addAmount(btn.dataset.quick, parseFloat(btn.dataset.amt)); });
@@ -631,9 +620,6 @@ function renderToday(){
       deleteEntry(btn.dataset.delentry, parseInt(btn.dataset.idx));
     });
   });
-  el.querySelectorAll('[data-markdone]').forEach(btn=>{
-    btn.addEventListener('click', (e)=>{ e.stopPropagation(); toggleBooleanLike(btn.dataset.markdone); });
-  });
 }
 
 function fmtTime(ts){ const d = new Date(ts); return pad(d.getHours())+':'+pad(d.getMinutes()); }
@@ -641,7 +627,6 @@ function fmtTime(ts){ const d = new Date(ts); return pad(d.getHours())+':'+pad(d
 function renderTodayRow(h, t){
   const status = dayStatus(h, t);
   const isDoneCls = (status === 'done') ? 'is-done' : '';
-  const isSkipCls = status === 'skipped' ? 'is-skipped' : '';
   const isDim = (status === 'not_scheduled' || status === 'paused');
   const expanded = expandedRows.has(h.id);
   const color = habitColorFor(h);
@@ -656,24 +641,22 @@ function renderTodayRow(h, t){
   }
 
   const log = getLog(h.id, t);
-  const skipBtn = `<button class="icon-btn skip-btn" data-skip="${h.id}" title="${status==='skipped'?'取消跳過':'跳過今天'}" aria-label="${status==='skipped'?'取消跳過':'跳過今天'}">${SKIP_ICON}</button>`;
   const expandBtn = `<button class="icon-btn expand-btn ${expanded?'open':''}" data-expand="${h.id}" title="${expanded?'收合':'展開明細'}" aria-label="${expanded?'收合明細':'展開明細'}">${CHEVRON_ICON}</button>`;
 
   if(h.type === 'boolean' || h.type === 'avoidance'){
     const detail = expanded ? `
       <div class="row-detail">
         ${ (status==='done' && log && log.doneAt) ? `<div class="detail-muted">${fmtTime(log.doneAt)} 完成</div>` : `<div class="detail-muted">尚未紀錄</div>` }
-        ${ status!=='done' ? `<button class="mark-done-inline" data-markdone="${h.id}">${PLUS_ICON}標記完成</button>` : '' }
       </div>` : '';
     const chkStyle = status==='done' ? `style="background:var(--${color});border-color:var(--${color})"` : '';
     return `
-      <div class="habit-row ${isDoneCls} ${isSkipCls}">
-        <button class="checkbox ${status==='done'?'checked':''}" ${chkStyle} data-row-toggle="${h.id}" aria-label="${status==='done'?'標記為未完成':'標記為完成'}">${status==='done'?CHECK_ICON:''}</button>
+      <div class="habit-row ${isDoneCls}">
+        <span class="badge" style="background:var(--${color})"></span>
         <div class="info" data-row-toggle="${h.id}">
           <span class="name">${escapeHtml(h.name)}</span>
-          ${status==='skipped' ? '<span class="skip-tag">跳過</span>' : ''}
+          <button class="inline-check ${status==='done'?'checked':''}" ${chkStyle} data-row-toggle="${h.id}" aria-label="${status==='done'?'標記為未完成':'標記為完成'}">${status==='done'?CHECK_ICON:''}</button>
         </div>
-        ${skipBtn}${expandBtn}
+        ${expandBtn}
         ${detail}
       </div>`;
   }
@@ -691,15 +674,15 @@ function renderTodayRow(h, t){
       </div>
     </div>` : '';
   return `
-    <div class="habit-row qty-row">
+    <div class="habit-row qty-row ${isDoneCls}">
       <span class="badge" style="background:var(--${color})"></span>
       <div class="info">
         <span class="name">${escapeHtml(h.name)}</span>
-        ${status==='skipped' ? '<span class="skip-tag">跳過</span>' : ''}
-        <span class="qty-inline"><span class="amt">${amt}</span>${goal? `<span class="goal">/${goal}</span>` : ''}<span class="unit">${escapeHtml(h.unit||'')}</span>${status==='done'?`<span class="mini-check">${CHECK_ICON}</span>`:''}</span>
+        <span class="inline-check ${status==='done'?'checked':''}" ${status==='done'?`style="background:var(--${color});border-color:var(--${color})"`:''}>${status==='done'?CHECK_ICON:''}</span>
+        <span class="qty-inline"><span class="amt">${amt}</span>${goal? `<span class="goal">/${goal}</span>` : ''}<span class="unit">${escapeHtml(h.unit||'')}</span></span>
         ${quickBtns ? `<div class="quick-chips-inline">${quickBtns}</div>` : ''}
       </div>
-      ${skipBtn}${expandBtn}
+      ${expandBtn}
       ${detail}
     </div>`;
 }
@@ -711,15 +694,6 @@ async function toggleBooleanLike(habitId){
   const curStatus = cur ? cur.status : 'not_done';
   const newStatus = curStatus==='done' ? 'not_done' : 'done';
   state.logs[habitId][t] = { status: newStatus, amount:0, entries: [], doneAt: newStatus==='done' ? Date.now() : null };
-  renderToday();
-  await saveState();
-}
-async function toggleSkip(habitId){
-  const t = todayStr();
-  if(!state.logs[habitId]) state.logs[habitId] = {};
-  const cur = state.logs[habitId][t] || { status:'not_done', amount:0, entries:[] };
-  cur.status = (cur.status === 'skipped') ? 'not_done' : 'skipped';
-  state.logs[habitId][t] = cur;
   renderToday();
   await saveState();
 }
@@ -756,8 +730,7 @@ function getWeekDates(offsetWeeks){
 function weekChip(status, color){
   if(status==='done') return `<div class="wk-chip-wrap"><span class="wk-chip" style="background:var(--${color})">✓</span></div>`;
   if(status==='skipped') return '<div class="wk-chip-wrap"><span class="wk-chip skip">–</span></div>';
-  if(status==='not_done' || status==='partial') return '<div class="wk-chip-wrap"><span class="wk-chip miss"></span></div>';
-  return '<div class="wk-chip-wrap"><span class="wk-chip na"></span></div>';
+  return '<div class="wk-chip-wrap"><span class="wk-chip miss"></span></div>';
 }
 function weekCompletion(h, weekDates){
   const today = new Date();
