@@ -82,7 +82,7 @@
   /* ---------- Habit row: CSS Grid, fixed columns, no layout shift ---------- */
   .habit-row{
     display:grid;
-    grid-template-columns: 14px 1fr 34px;
+    grid-template-columns: 28px 1fr 34px;
     align-items:center;
     column-gap:10px;
     row-gap:8px;
@@ -90,18 +90,17 @@
     border-bottom: 1px solid var(--border);
   }
   .habit-row:last-child{ border-bottom:none; }
-  .habit-row.dim{ opacity:0.45; grid-template-columns: 14px 1fr auto; }
-  .habit-row .badge{ grid-column:1; width:11px; height:11px; border-radius:50%; justify-self:center; align-self:start; margin-top:7px; }
+  .habit-row.dim{ opacity:0.45; grid-template-columns: 28px 1fr auto; }
+  .habit-row .badge{ grid-column:1; width:11px; height:11px; border-radius:50%; justify-self:center; align-self:start; margin-top:6px; }
   .habit-row .info{ grid-column:2; min-width:0; display:flex; align-items:center; flex-wrap:wrap; column-gap:8px; row-gap:5px; cursor:pointer; }
   .quick-chips-inline{ display:flex; gap:5px; flex-wrap:wrap; flex-basis:100%; margin-top:2px; cursor:default; }
   .qty-row .info{ cursor:default; }
   .habit-row .name{ font-weight:700; font-size:17px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .habit-row .dim-tag{ grid-column:3; font-size:12px; color: var(--ink-muted); justify-self:end; white-space:nowrap; }
 
-  /* checkbox — inline after the title, sized to match text */
-  .inline-check{ width:22px; height:22px; flex-shrink:0; border:2px solid var(--border); border-radius:7px; background:var(--surface); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; padding:0; }
-  .inline-check svg{ width:13px; height:13px; color:#fff; }
-  span.inline-check{ cursor:default; }
+  .checkbox{ grid-column:1; align-self:center; width:26px; height:26px; border:2.5px solid var(--border); border-radius:9px; background:var(--surface); cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; transition: background .12s ease, border-color .12s ease, transform .12s ease; }
+  .checkbox svg{ width:16px; height:16px; color:#fff; }
+  .checkbox.checked{ transform: scale(1.05); }
 
   .expand-btn{ grid-column:3; align-self:start; }
   .icon-btn{ width:34px; height:34px; border:none; background:none; color: var(--ink-muted); opacity:0.55; cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:8px; padding:0; justify-self:center; }
@@ -651,10 +650,9 @@ function renderTodayRow(h, t){
     const chkStyle = status==='done' ? `style="background:var(--${color});border-color:var(--${color})"` : '';
     return `
       <div class="habit-row ${isDoneCls}">
-        <span class="badge" style="background:var(--${color})"></span>
+        <button class="checkbox ${status==='done'?'checked':''}" ${chkStyle} data-row-toggle="${h.id}" aria-label="${status==='done'?'標記為未完成':'標記為完成'}">${status==='done'?CHECK_ICON:''}</button>
         <div class="info" data-row-toggle="${h.id}">
           <span class="name">${escapeHtml(h.name)}</span>
-          <button class="inline-check ${status==='done'?'checked':''}" ${chkStyle} data-row-toggle="${h.id}" aria-label="${status==='done'?'標記為未完成':'標記為完成'}">${status==='done'?CHECK_ICON:''}</button>
         </div>
         ${expandBtn}
         ${detail}
@@ -674,11 +672,10 @@ function renderTodayRow(h, t){
       </div>
     </div>` : '';
   return `
-    <div class="habit-row qty-row ${isDoneCls}">
+    <div class="habit-row qty-row">
       <span class="badge" style="background:var(--${color})"></span>
       <div class="info">
         <span class="name">${escapeHtml(h.name)}</span>
-        <span class="inline-check ${status==='done'?'checked':''}" ${status==='done'?`style="background:var(--${color});border-color:var(--${color})"`:''}>${status==='done'?CHECK_ICON:''}</span>
         <span class="qty-inline"><span class="amt">${amt}</span>${goal? `<span class="goal">/${goal}</span>` : ''}<span class="unit">${escapeHtml(h.unit||'')}</span></span>
         ${quickBtns ? `<div class="quick-chips-inline">${quickBtns}</div>` : ''}
       </div>
@@ -780,18 +777,6 @@ function renderRecords(){
     if(withData.length < 2 || best.habit.id === worst.habit.id) worst = null;
   }
 
-  const catMap = {};
-  activeHabits.forEach(h=>{
-    if(!h.category) return;
-    if(!catMap[h.category]) catMap[h.category] = { done:0, scheduled:0 };
-    const w = weekCompletion(h, thisWeek);
-    catMap[h.category].done += w.done;
-    catMap[h.category].scheduled += w.scheduled;
-  });
-  const categoryStats = Object.keys(catMap)
-    .map(id=>({ id, label:getCategoryLabel(id), pct: catMap[id].scheduled ? Math.round(catMap[id].done/catMap[id].scheduled*100) : null }))
-    .filter(c=>c.pct!==null && c.label);
-
   const cumHabits = state.habits.filter(h=>h.status==='active' || h.status==='paused');
   const cumData = cumHabits.map(h=>({ habit:h, done: calcLifetimeStats(h).done }));
   const maxCum = Math.max(1, ...cumData.map(c=>c.done));
@@ -825,16 +810,6 @@ function renderRecords(){
       ${best ? `<div class="stat-pill good"><div class="lbl">表現最好</div><div class="name">${escapeHtml(best.habit.name)}</div><div class="ratio">${best.done} / ${best.scheduled} 天</div></div>` : ''}
       ${worst ? `<div class="stat-pill warn"><div class="lbl">需要加強</div><div class="name">${escapeHtml(worst.habit.name)}</div><div class="ratio">${worst.done} / ${worst.scheduled} 天</div></div>` : ''}
     </div>` : ''}
-
-    ${categoryStats.length ? `
-    <div class="section-label">分類表現</div>
-    ${categoryStats.map(c=>`
-      <div class="cat-stat-row">
-        <div class="lbl">${escapeHtml(c.label)}</div>
-        <div class="track"><div class="fill" style="width:${c.pct}%"></div></div>
-        <div class="pct">${c.pct}%</div>
-      </div>`).join('')}
-    ` : ''}
 
     ${cumData.length ? `
     <div class="section-label">累積完成</div>
@@ -1006,10 +981,6 @@ function renderSettings(){
     ${pausedList.length? `<div style="margin-top:6px;font-size:12px;color:var(--ink-muted);font-weight:700;">已暫停</div>${pausedList.map(h=>habitManageRowHtml(h)).join('')}` : ''}
     ${archivedList.length? `<div style="margin-top:6px;font-size:12px;color:var(--ink-muted);font-weight:700;">已封存</div>${archivedList.map(h=>habitManageRowHtml(h)).join('')}` : ''}
 
-    <div class="section-label">分類</div>
-    <div class="add-btn-row small"><button id="addCategoryBtn">＋ 新增分類</button></div>
-    <div id="categoryList"></div>
-
     <div class="section-label">資料</div>
     <div class="settings-row">
       <div><div class="lbl">匯出資料</div><div class="desc">匯出所有習慣與紀錄為 JSON 檔。</div></div>
@@ -1023,8 +994,6 @@ function renderSettings(){
 
   document.getElementById('openAddForm').addEventListener('click', ()=> showHabitForm(null));
   bindHabitManageActions(el);
-  renderCategoryList();
-  document.getElementById('addCategoryBtn').addEventListener('click', addCategory);
   document.getElementById('exportBtn').addEventListener('click', exportData);
   document.getElementById('signOutBtn2').addEventListener('click', () => signOut(auth));
 }
@@ -1088,18 +1057,11 @@ function bindHabitManageActions(el){
 }
 function addDaysStr(dateStr, n){ const d = parseDate(dateStr); d.setDate(d.getDate()+n); return fmt(d); }
 
-function categoryOptionsHtml(selectedId){
-  const opts = state.categories.filter(c=>!c.disabled || c.id===selectedId)
-    .map(c=>`<option value="${c.id}" ${c.id===selectedId?'selected':''}>${escapeHtml(c.label)}</option>`).join('');
-  return `<option value="" ${!selectedId?'selected':''}>不指定</option>` + opts;
-}
-
 function showHabitForm(habit){
   editingHabitId = habit ? habit.id : null;
   const host = document.getElementById('formHost');
   const goal = habit ? (habit.configHistory && habit.configHistory.length ? habit.configHistory[habit.configHistory.length-1].goal : null) : null;
   const defaultType = habit ? habit.type : 'boolean';
-  const defaultCategory = habit ? (habit.category||'') : '';
 
   host.innerHTML = `
     <div class="form-panel">
@@ -1107,15 +1069,15 @@ function showHabitForm(habit){
       <div class="field"><label>名稱</label><input id="fName" value="${habit?escapeHtml(habit.name):''}" placeholder="例如:喝水"></div>
       <div class="field">
         <label>類型</label>
-        <div class="type-picker" id="typePicker">
+        <div class="type-pills" id="typePicker">
           ${TYPE_LIST.map(t=>`
-            <label class="type-option ${t.key===defaultType?'tp-checked':''}">
+            <label class="type-pill ${t.key===defaultType?'tp-checked':''}">
               <input type="radio" name="fType" value="${t.key}" ${t.key===defaultType?'checked':''}>
-              <div><b>${escapeHtml(t.label)}</b><span>${escapeHtml(t.desc)}</span></div>
+              <span>${escapeHtml(t.label)}</span>
             </label>`).join('')}
         </div>
+        <div class="hint" id="typeHint"></div>
       </div>
-      <div class="field"><label>分類</label><select id="fCategory">${categoryOptionsHtml(defaultCategory)}</select></div>
       <div id="quantFields">
         <div class="field-row">
           <div class="field"><label>單位</label><input id="fUnit" value="${habit&&habit.unit?escapeHtml(habit.unit):''}" placeholder="例如:ml、分鐘"></div>
@@ -1140,16 +1102,17 @@ function showHabitForm(habit){
       </div>
     </div>`;
 
-  function syncTypeVisibility(){
+  function syncType(){
     const t = document.querySelector('input[name="fType"]:checked').value;
     document.getElementById('quantFields').style.display = (t==='boolean'||t==='avoidance') ? 'none' : 'block';
+    document.getElementById('typeHint').textContent = (TYPE_LIST.find(x=>x.key===t)||{}).desc || '';
   }
   document.querySelectorAll('input[name="fType"]').forEach(r=>r.addEventListener('change', (e)=>{
-    document.querySelectorAll('#typePicker .type-option').forEach(opt=>opt.classList.remove('tp-checked'));
-    e.target.closest('.type-option').classList.add('tp-checked');
-    syncTypeVisibility();
+    document.querySelectorAll('#typePicker .type-pill').forEach(opt=>opt.classList.remove('tp-checked'));
+    e.target.closest('.type-pill').classList.add('tp-checked');
+    syncType();
   }));
-  syncTypeVisibility();
+  syncType();
 
   document.querySelectorAll('#dayPick .dayChk').forEach(chk=>chk.addEventListener('change', (e)=>{
     e.target.closest('label').classList.toggle('dc-on', e.target.checked);
@@ -1160,7 +1123,6 @@ function showHabitForm(habit){
     const name = document.getElementById('fName').value.trim();
     if(!name){ document.getElementById('fName').focus(); return; }
     const type = document.querySelector('input[name="fType"]:checked').value;
-    const category = document.getElementById('fCategory').value;
     const unit = document.getElementById('fUnit').value.trim();
     const goalRaw = document.getElementById('fGoal').value.trim();
     const goalVal = goalRaw ? parseFloat(goalRaw) : null;
@@ -1172,7 +1134,7 @@ function showHabitForm(habit){
 
     if(editingHabitId){
       const h = state.habits.find(x=>x.id===editingHabitId);
-      h.name = name; h.type = type; h.category = category; h.unit = unit;
+      h.name = name; h.type = type; h.unit = unit;
       h.executionDays = executionDays; h.startDate = startDate; h.note = note;
       if(quickAdds.length) h.quickAdds = quickAdds;
       h.configHistory = h.configHistory || [];
