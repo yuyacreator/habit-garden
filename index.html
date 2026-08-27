@@ -327,7 +327,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -382,18 +382,43 @@ function getCategoryLabel(id){ if(!id) return ''; const c = state.categories.fin
 function getTypeLabel(key){ const t = TYPE_LIST.find(x=>x.key===key); return t ? t.label : key; }
 
 /* ---------- Auth ---------- */
+setPersistence(auth, browserLocalPersistence).catch(()=>{});
+
+function isInAppBrowser(){
+  const ua = navigator.userAgent || '';
+  return /FBAN|FBAV|Instagram|Line\/|MicroMessenger|WeChat|Twitter|LinkedInApp/i.test(ua);
+}
+if(isInAppBrowser()){
+  document.getElementById('loginStatus').textContent = '偵測到目前是在 App 內建瀏覽器打開(例如 LINE / IG / FB),Google 登入無法在這裡完成。請點右上角「⋯」選「用瀏覽器開啟」,改用 Safari 或 Chrome 開啟這個網址再登入。';
+}
+
 document.getElementById('googleBtn').addEventListener('click', async () => {
+  if(isInAppBrowser()){
+    document.getElementById('loginStatus').textContent = '請先改用 Safari 或 Chrome 開啟這個網址(右上角「⋯」→ 用瀏覽器開啟),才能完成 Google 登入。';
+    return;
+  }
   document.getElementById('loginStatus').textContent = '登入中…';
   try{
     await signInWithPopup(auth, provider);
   }catch(e){
-    try{ await signInWithRedirect(auth, provider); }
+    try{
+      sessionStorage.setItem('authRedirectAttempt', '1');
+      await signInWithRedirect(auth, provider);
+    }
     catch(e2){ document.getElementById('loginStatus').textContent = '登入失敗,請再試一次(' + e2.code + ')'; }
   }
 });
 document.getElementById('signOutBtn').addEventListener('click', () => signOut(auth));
-getRedirectResult(auth).catch((e)=>{
-  if(e && e.code) document.getElementById('loginStatus').textContent = '登入失敗,請再試一次(' + e.code + ')';
+
+getRedirectResult(auth).then((result)=>{
+  const attempted = sessionStorage.getItem('authRedirectAttempt');
+  sessionStorage.removeItem('authRedirectAttempt');
+  if(attempted && !result){
+    document.getElementById('loginStatus').textContent = '登入沒有完成。請確認是用手機的 Safari 或 Chrome 直接開啟此網址(不是 App 內建瀏覽器),並允許網站的追蹤/Cookie 權限,再試一次。';
+  }
+}).catch((e)=>{
+  sessionStorage.removeItem('authRedirectAttempt');
+  document.getElementById('loginStatus').textContent = '登入失敗,請再試一次(' + (e && e.code ? e.code : '未知錯誤') + ')';
 });
 
 onAuthStateChanged(auth, (user) => {
