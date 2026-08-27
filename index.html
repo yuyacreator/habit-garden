@@ -119,6 +119,8 @@
   .detail-line:last-child{ border-bottom:none; }
   .detail-muted{ font-size:13px; color: var(--ink-muted); padding:4px 0; }
   .add-entry-inline{ display:flex; gap:6px; align-items:center; margin-top:8px; }
+  .icon-text-btn{ display:inline-flex; align-items:center; gap:5px; background: var(--sun-dim); color:#8a6a1a; border:none; border-radius:8px; padding:8px 13px; font-size:12.5px; font-weight:700; cursor:pointer; }
+  .icon-text-btn svg{ width:13px; height:13px; }
   .add-entry-inline input{ width:76px; border:1px solid var(--border); border-radius:8px; padding:7px; background:var(--paper); }
   .add-entry-inline button{ background: var(--sun-dim); color:#8a6a1a; border:none; border-radius:8px; padding:7px 12px; font-size:12.5px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px; }
   .add-entry-inline button svg{ width:12px; height:12px; }
@@ -204,11 +206,10 @@
   .cat-stat-row .fill{ height:100%; background: var(--sun); border-radius:999px; }
   .cat-stat-row .pct{ width:42px; flex-shrink:0; text-align:right; font-size:13.5px; font-weight:700; }
 
-  .cum-row{ display:flex; align-items:center; gap:12px; padding:9px 2px; }
-  .cum-row .lbl{ width:80px; flex-shrink:0; font-size:14px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .cum-row .track{ flex:1; height:8px; background: var(--border); border-radius:999px; overflow:hidden; }
-  .cum-row .fill{ height:100%; border-radius:999px; }
-  .cum-row .num{ width:52px; flex-shrink:0; text-align:right; font-size:13.5px; font-weight:700; color: var(--ink-muted); }
+  .cum-row{ display:flex; align-items:center; justify-content:space-between; padding:10px 2px; border-bottom:1px solid var(--border); }
+  .cum-row:last-child{ border-bottom:none; }
+  .cum-row .lbl{ font-size:14.5px; font-weight:700; }
+  .cum-row .num{ font-size:14px; font-weight:700; color: var(--ink-muted); }
 
   .week-card{ background: var(--surface); border:2px solid var(--border); border-radius:18px; padding:16px 14px; margin-bottom:24px; }
   .week-head-row{ display:flex; align-items:center; padding-bottom:10px; margin-bottom:8px; border-bottom:1.5px solid var(--border); }
@@ -354,8 +355,10 @@ let calCursor = new Date();
 const WEEKDAY_CHECKS = [ {label:'一', val:1}, {label:'二', val:2}, {label:'三', val:3}, {label:'四', val:4}, {label:'五', val:5}, {label:'六', val:6}, {label:'日', val:0} ];
 const HABIT_COLORS = ['moss','sky','teal','coral','berry','lilac'];
 function habitColorFor(h){
-  const idx = state.habits.findIndex(x=>x.id===h.id);
-  return HABIT_COLORS[(idx<0?0:idx) % HABIT_COLORS.length];
+  let hash = 0;
+  for(let i=0;i<h.id.length;i++){ hash = (hash*31 + h.id.charCodeAt(i)) | 0; }
+  const idx = Math.abs(hash) % HABIT_COLORS.length;
+  return HABIT_COLORS[idx];
 }
 
 function defaultCategories(){
@@ -437,7 +440,7 @@ function migrateState(raw){
     });
   });
 
-  s.habits = s.habits.map(h => migrateHabit(h, s.logs));
+  s.habits = s.habits.map((h,i) => migrateHabit(h, s.logs, i));
   return s;
 }
 function earliestLogDate(habitId, logs){
@@ -447,7 +450,7 @@ function earliestLogDate(habitId, logs){
   if(!keys.length) return null;
   return keys.sort()[0];
 }
-function migrateHabit(h, logs){
+function migrateHabit(h, logs, idx){
   h = Object.assign({}, h);
   if(!h.id) h.id = 'hb_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
   if(!h.name) h.name = '未命名習慣';
@@ -464,6 +467,7 @@ function migrateHabit(h, logs){
   }
   delete h.goal;
   if(h.note === undefined) h.note = '';
+  if(h.order === undefined) h.order = idx;
   return h;
 }
 
@@ -547,7 +551,7 @@ let expandedRows = new Set();
 function renderToday(){
   const el = document.getElementById('tab-today');
   const t = todayStr();
-  const active = state.habits.filter(h=>h.status==='active');
+  const active = state.habits.filter(h=>h.status==='active').sort((a,b)=>(a.order||0)-(b.order||0));
   const scheduledToday = active.filter(h=>!isPausedOn(h,t) && isExecutionDay(h,t));
   const doneCount = scheduledToday.filter(h=>dayStatus(h,t)==='done').length;
   const pct = scheduledToday.length ? Math.round(doneCount/scheduledToday.length*100) : 0;
@@ -684,18 +688,18 @@ function renderTodayRow(h, t){
     </div>`;
 }
 
-async function toggleBooleanLike(habitId){
-  const t = todayStr();
+async function toggleBooleanLike(habitId, dateStr, onDone){
+  const t = dateStr || todayStr();
   if(!state.logs[habitId]) state.logs[habitId] = {};
   const cur = state.logs[habitId][t];
   const curStatus = cur ? cur.status : 'not_done';
   const newStatus = curStatus==='done' ? 'not_done' : 'done';
   state.logs[habitId][t] = { status: newStatus, amount:0, entries: [], doneAt: newStatus==='done' ? Date.now() : null };
-  renderToday();
+  if(onDone) onDone(); else renderToday();
   await saveState();
 }
-async function addAmount(habitId, amount){
-  const t = todayStr();
+async function addAmount(habitId, amount, dateStr, onDone){
+  const t = dateStr || todayStr();
   if(!state.logs[habitId]) state.logs[habitId] = {};
   if(!state.logs[habitId][t]) state.logs[habitId][t] = { status:'not_done', amount:0, entries: [] };
   const log = state.logs[habitId][t];
@@ -703,16 +707,16 @@ async function addAmount(habitId, amount){
   log.entries = log.entries || [];
   log.entries.push({ amt: amount, ts: Date.now() });
   if(log.status === 'skipped') log.status = 'not_done';
-  renderToday();
+  if(onDone) onDone(); else renderToday();
   await saveState();
 }
-async function deleteEntry(habitId, idx){
-  const t = todayStr();
+async function deleteEntry(habitId, idx, dateStr, onDone){
+  const t = dateStr || todayStr();
   const log = state.logs[habitId] && state.logs[habitId][t];
   if(!log || !log.entries || !log.entries[idx]) return;
   log.entries.splice(idx, 1);
   log.amount = log.entries.reduce((sum,e)=>sum+(e.amt||0), 0);
-  renderToday();
+  if(onDone) onDone(); else renderToday();
   await saveState();
 }
 
@@ -750,8 +754,8 @@ function renderRecords(){
     el.innerHTML = `<div class="empty-state"><h3>還沒有紀錄</h3><p>新增第一個習慣後,這裡會慢慢累積。</p></div>`;
     return;
   }
-  const visibleHabits = state.habits.filter(h=>h.status!=='deleted' && h.status!=='archived');
-  const activeHabits = state.habits.filter(h=>h.status==='active');
+  const visibleHabits = state.habits.filter(h=>h.status!=='deleted' && h.status!=='archived').sort((a,b)=>(a.order||0)-(b.order||0));
+  const activeHabits = state.habits.filter(h=>h.status==='active').sort((a,b)=>(a.order||0)-(b.order||0));
   const thisWeek = getWeekDates(0);
   const lastWeek = getWeekDates(-1);
   const WD_LABELS = ['一','二','三','四','五','六','日'];
@@ -777,7 +781,7 @@ function renderRecords(){
     if(withData.length < 2 || best.habit.id === worst.habit.id) worst = null;
   }
 
-  const cumHabits = state.habits.filter(h=>h.status==='active' || h.status==='paused');
+  const cumHabits = state.habits.filter(h=>h.status==='active' || h.status==='paused').sort((a,b)=>(a.order||0)-(b.order||0));
   const cumData = cumHabits.map(h=>({ habit:h, done: calcLifetimeStats(h).done }));
   const maxCum = Math.max(1, ...cumData.map(c=>c.done));
 
@@ -802,7 +806,6 @@ function renderRecords(){
       <div class="spot"></div>
       <div class="cap">本週完成率</div>
       <div class="num">${weekPct===null?'—':weekPct+'%'}</div>
-      ${delta!==null ? `<div class="delta ${delta>0?'up':(delta<0?'down':'flat')}">比上週 ${delta>0?'+':''}${delta}%</div>` : ''}
     </div>
 
     ${(best || worst) ? `
@@ -813,15 +816,7 @@ function renderRecords(){
 
     ${cumData.length ? `
     <div class="section-label">累積完成</div>
-    ${cumData.map(c=>{
-      const color = habitColorFor(c.habit);
-      const w = Math.round(c.done/maxCum*100);
-      return `<div class="cum-row">
-        <div class="lbl">${escapeHtml(c.habit.name)}</div>
-        <div class="track"><div class="fill" style="width:${w}%;background:var(--${color})"></div></div>
-        <div class="num">${c.done} 次</div>
-      </div>`;
-    }).join('')}
+    ${cumData.map(c=>`<div class="cum-row"><div class="lbl">${escapeHtml(c.habit.name)}</div><div class="num">${c.done} 次</div></div>`).join('')}
     ` : ''}
 
     <div class="section-label">這一週的每一天</div>
@@ -845,7 +840,7 @@ function renderRecords(){
 
 function renderHistoryHabitChips(){
   const wrap = document.getElementById('historyHabitChips');
-  const list = state.habits.filter(h=>h.status!=='deleted');
+  const list = state.habits.filter(h=>h.status!=='deleted').sort((a,b)=>(a.order||0)-(b.order||0));
   if(historySelectedHabit === null) historySelectedHabit = '';
   wrap.innerHTML = `<button data-h="" class="${historySelectedHabit===''?'active':''}">全部</button>` +
     list.map(h=>`<button data-h="${h.id}" class="${h.id===historySelectedHabit?'active':''}">${escapeHtml(h.name)}</button>`).join('');
@@ -872,7 +867,7 @@ function renderCalendar(){
   const startOffset = (firstDay.getDay()+6)%7;
   const daysInMonth = new Date(year, month+1, 0).getDate();
   const t = todayStr();
-  const allHabits = state.habits.filter(h=>h.status!=='deleted');
+  const allHabits = state.habits.filter(h=>h.status!=='deleted').sort((a,b)=>(a.order||0)-(b.order||0));
 
   let html = '';
   for(let i=0;i<startOffset;i++) html += '<div class="cal-cell pad"></div>';
@@ -907,7 +902,7 @@ function showDayDetail(ds){
   const isAll = (historySelectedHabit === '' || historySelectedHabit === null);
 
   if(isAll){
-    const allHabits = state.habits.filter(h=>h.status!=='deleted' && isScheduledThatDay(h, ds));
+    const allHabits = state.habits.filter(h=>h.status!=='deleted' && isScheduledThatDay(h, ds)).sort((a,b)=>(a.order||0)-(b.order||0));
     if(allHabits.length === 0){
       host.innerHTML = `<div class="day-detail-panel"><div class="day-detail-date">${d.getMonth()+1} 月 ${d.getDate()} 日</div><div class="day-detail-empty">這天沒有排定的習慣</div></div>`;
       return;
@@ -948,13 +943,21 @@ function showDayDetail(ds){
     statusTxt = amt + (goal? ' / '+goal : '') + ' ' + (habit.unit||'') + (s==='done'?' ✓':'');
   }
 
-  let entriesHtml = '';
-  if(habit.type!=='boolean' && habit.type!=='avoidance' && s!=='skipped'){
+  let editHtml = '';
+  if(habit.type==='boolean' || habit.type==='avoidance'){
+    if(s!=='skipped'){
+      editHtml = `<button class="icon-text-btn" data-editday-toggle="${habit.id}" data-editday-date="${ds}">${s==='done'?CHECK_ICON:PLUS_ICON}${s==='done'?'取消完成':'標記完成'}</button>`;
+    }
+  }else{
     const log = getLog(habit.id, ds);
     const entries = (log && log.entries) || [];
-    if(entries.length){
-      entriesHtml = entries.map(en=>`<div class="day-detail-entry"><span>${fmtTime(en.ts)}</span><span>${en.amt} ${escapeHtml(habit.unit||'')}</span></div>`).join('');
-    }
+    const entriesHtml = entries.length ? entries.map((en,i)=>`<div class="day-detail-entry"><span>${fmtTime(en.ts)}　${en.amt} ${escapeHtml(habit.unit||'')}</span><button class="icon-btn del-entry" data-editday-del="${habit.id}" data-editday-date="${ds}" data-idx="${i}" title="刪除" aria-label="刪除這筆紀錄">${TRASH_ICON}</button></div>`).join('') : '';
+    editHtml = `
+      ${entriesHtml}
+      <div class="add-entry-inline" style="margin-top:10px;">
+        <input type="number" placeholder="數量" id="editday-manual-${habit.id}-${ds}">
+        <button data-editday-add="${habit.id}" data-editday-date="${ds}">${PLUS_ICON}新增</button>
+      </div>`;
   }
 
   host.innerHTML = `
@@ -962,24 +965,41 @@ function showDayDetail(ds){
       <div class="day-detail-date">${d.getMonth()+1} 月 ${d.getDate()} 日</div>
       <div class="day-detail-habit"><span class="dd-dot" style="background:var(--${color})"></span>${escapeHtml(habit.name)}</div>
       <div class="day-detail-status">${statusTxt}</div>
-      ${entriesHtml}
+      ${editHtml}
     </div>`;
+
+  host.querySelectorAll('[data-editday-toggle]').forEach(btn=>{
+    btn.addEventListener('click', ()=> toggleBooleanLike(btn.dataset.editdayToggle, btn.dataset.editdayDate, ()=>{ renderRecords(); }));
+  });
+  host.querySelectorAll('[data-editday-del]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(!confirm('刪除這筆紀錄?')) return;
+      deleteEntry(btn.dataset.editdayDel, parseInt(btn.dataset.idx), btn.dataset.editdayDate, ()=>{ renderRecords(); });
+    });
+  });
+  host.querySelectorAll('[data-editday-add]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const input = document.getElementById('editday-manual-'+btn.dataset.editdayAdd+'-'+btn.dataset.editdayDate);
+      const val = parseFloat(input.value);
+      if(!isNaN(val) && val !== 0){ addAmount(btn.dataset.editdayAdd, val, btn.dataset.editdayDate, ()=>{ renderRecords(); }); }
+    });
+  });
 }
 
 /* ================= SETTINGS ================= */
 function renderSettings(){
   const el = document.getElementById('tab-settings');
-  const activeList = state.habits.filter(h=>h.status==='active');
-  const pausedList = state.habits.filter(h=>h.status==='paused');
-  const archivedList = state.habits.filter(h=>h.status==='archived');
+  const activeList = state.habits.filter(h=>h.status==='active').sort((a,b)=>(a.order||0)-(b.order||0));
+  const pausedList = state.habits.filter(h=>h.status==='paused').sort((a,b)=>(a.order||0)-(b.order||0));
+  const archivedList = state.habits.filter(h=>h.status==='archived').sort((a,b)=>(a.order||0)-(b.order||0));
 
   el.innerHTML = `
     <div class="section-label">習慣管理</div>
     <div class="add-btn-row"><button id="openAddForm">＋ 新增習慣</button></div>
     <div id="formHost"></div>
-    ${activeList.length? activeList.map(h=>habitManageRowHtml(h)).join('') : '<div style="color:var(--ink-muted);font-size:14px;padding:8px 2px;">還沒有進行中的習慣</div>'}
-    ${pausedList.length? `<div style="margin-top:6px;font-size:12px;color:var(--ink-muted);font-weight:700;">已暫停</div>${pausedList.map(h=>habitManageRowHtml(h)).join('')}` : ''}
-    ${archivedList.length? `<div style="margin-top:6px;font-size:12px;color:var(--ink-muted);font-weight:700;">已封存</div>${archivedList.map(h=>habitManageRowHtml(h)).join('')}` : ''}
+    ${activeList.length? activeList.map((h,i)=>habitManageRowHtml(h, i===0, i===activeList.length-1)).join('') : '<div style="color:var(--ink-muted);font-size:14px;padding:8px 2px;">還沒有進行中的習慣</div>'}
+    ${pausedList.length? `<div style="margin-top:6px;font-size:12px;color:var(--ink-muted);font-weight:700;">已暫停</div>${pausedList.map((h,i)=>habitManageRowHtml(h, i===0, i===pausedList.length-1)).join('')}` : ''}
+    ${archivedList.length? `<div style="margin-top:6px;font-size:12px;color:var(--ink-muted);font-weight:700;">已封存</div>${archivedList.map((h,i)=>habitManageRowHtml(h, i===0, i===archivedList.length-1)).join('')}` : ''}
 
     <div class="section-label">資料</div>
     <div class="settings-row">
@@ -998,7 +1018,7 @@ function renderSettings(){
   document.getElementById('signOutBtn2').addEventListener('click', () => signOut(auth));
 }
 
-function habitManageRowHtml(h){
+function habitManageRowHtml(h, isFirst, isLast){
   const goal = h.configHistory && h.configHistory.length ? h.configHistory[h.configHistory.length-1].goal : null;
   const days = (!h.executionDays || h.executionDays.length===0) ? '每天' : WEEKDAY_CHECKS.filter(w=>h.executionDays.includes(w.val)).map(w=>w.label).join('');
   const metaBits = [];
@@ -1015,10 +1035,30 @@ function habitManageRowHtml(h){
   }else{
     actions = `<button data-resume="${h.id}">取消封存</button><button class="danger" data-softdelete="${h.id}">刪除</button>`;
   }
-  return `<div class="manage-row"><div class="info"><b><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--${color});margin-right:7px;"></span>${escapeHtml(h.name)}</b><div class="meta-line">${metaBits.map(escapeHtml).join(' · ')}</div></div><div class="link-actions">${actions}</div></div>`;
+  const orderBtns = `${!isFirst?`<button class="muted" data-orderup="${h.id}">↑</button>`:''}${!isLast?`<button class="muted" data-orderdown="${h.id}">↓</button>`:''}`;
+  return `<div class="manage-row"><div class="info"><b><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--${color});margin-right:7px;"></span>${escapeHtml(h.name)}</b><div class="meta-line">${metaBits.map(escapeHtml).join(' · ')}</div></div><div class="link-actions">${orderBtns}${actions}</div></div>`;
+}
+
+function moveHabitOrder(habitId, direction){
+  const h = state.habits.find(x=>x.id===habitId);
+  if(!h) return;
+  const group = state.habits.filter(x=>x.status===h.status).sort((a,b)=>(a.order||0)-(b.order||0));
+  const idx = group.findIndex(x=>x.id===habitId);
+  const swapIdx = idx + direction;
+  if(swapIdx < 0 || swapIdx >= group.length) return;
+  const other = group[swapIdx];
+  const tmp = h.order; h.order = other.order; other.order = tmp;
 }
 
 function bindHabitManageActions(el){
+  el.querySelectorAll('[data-orderup]').forEach(b=>b.addEventListener('click', async ()=>{
+    moveHabitOrder(b.dataset.orderup, -1);
+    renderAll(); await saveState();
+  }));
+  el.querySelectorAll('[data-orderdown]').forEach(b=>b.addEventListener('click', async ()=>{
+    moveHabitOrder(b.dataset.orderdown, 1);
+    renderAll(); await saveState();
+  }));
   el.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click', ()=>{
     const h = state.habits.find(x=>x.id===b.dataset.edit);
     if(h) showHabitForm(h);
@@ -1143,81 +1183,14 @@ function showHabitForm(habit){
     }else{
       state.habits.push({
         id: 'hb_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
-        name, type, category, unit, quickAdds, executionDays, startDate, note,
-        status: 'active', pausedRanges: [],
+        name, type, unit, quickAdds, executionDays, startDate, note,
+        status: 'active', pausedRanges: [], order: Date.now(),
         configHistory: [{ effectiveFrom: startDate, goal: goalVal }]
       });
     }
     editingHabitId = null; host.innerHTML = '';
     renderAll(); await saveState();
   });
-}
-
-/* ---- Category management ---- */
-function countHabitsUsingCategory(id){ return state.habits.filter(h=>h.category===id && h.status!=='deleted').length; }
-async function addCategory(){
-  const val = prompt('新分類名稱');
-  if(!val || !val.trim()) return;
-  state.categories.push({ id: 'cat_'+Date.now()+'_'+Math.random().toString(36).slice(2,5), label: val.trim(), disabled:false });
-  renderSettings(); await saveState();
-}
-function renderCategoryList(){
-  const host = document.getElementById('categoryList');
-  if(state.categories.length === 0){
-    host.innerHTML = '<div style="color:var(--ink-muted);font-size:14px;padding:8px 2px;">還沒有分類</div>';
-    return;
-  }
-  host.innerHTML = state.categories.map((c,i)=>`
-    <div class="manage-row ${c.disabled?'disabled':''}">
-      <div class="info"><b>${escapeHtml(c.label)}</b></div>
-      <div class="link-actions">
-        ${i>0?`<button class="muted" data-cup="${c.id}">↑</button>`:''}
-        ${i<state.categories.length-1?`<button class="muted" data-cdown="${c.id}">↓</button>`:''}
-        <button data-crename="${c.id}">重新命名</button>
-        <button class="muted" data-ctoggle="${c.id}">${c.disabled?'啟用':'停用'}</button>
-        <button class="danger" data-cdelete="${c.id}">刪除</button>
-      </div>
-    </div>`).join('');
-
-  host.querySelectorAll('[data-crename]').forEach(b=>b.addEventListener('click', async ()=>{
-    const c = state.categories.find(x=>x.id===b.dataset.crename);
-    const val = prompt('重新命名分類', c.label);
-    if(val && val.trim()){ c.label = val.trim(); renderSettings(); renderAll(); await saveState(); }
-  }));
-  host.querySelectorAll('[data-ctoggle]').forEach(b=>b.addEventListener('click', async ()=>{
-    const c = state.categories.find(x=>x.id===b.dataset.ctoggle);
-    c.disabled = !c.disabled;
-    renderSettings(); await saveState();
-  }));
-  host.querySelectorAll('[data-cup]').forEach(b=>b.addEventListener('click', async ()=>{
-    const i = state.categories.findIndex(x=>x.id===b.dataset.cup);
-    if(i>0){ [state.categories[i-1],state.categories[i]]=[state.categories[i],state.categories[i-1]]; renderSettings(); await saveState(); }
-  }));
-  host.querySelectorAll('[data-cdown]').forEach(b=>b.addEventListener('click', async ()=>{
-    const i = state.categories.findIndex(x=>x.id===b.dataset.cdown);
-    if(i<state.categories.length-1){ [state.categories[i+1],state.categories[i]]=[state.categories[i],state.categories[i+1]]; renderSettings(); await saveState(); }
-  }));
-  host.querySelectorAll('[data-cdelete]').forEach(b=>b.addEventListener('click', async ()=>{
-    const id = b.dataset.cdelete;
-    const c = state.categories.find(x=>x.id===id);
-    const count = countHabitsUsingCategory(id);
-    if(count > 0){
-      const others = state.categories.filter(x=>x.id!==id).map(x=>x.label).join('、');
-      const target = prompt(`「${c.label}」目前有 ${count} 個習慣使用。\n請輸入要改指定的分類名稱(從:${others || '無其他分類'} 中選一個),或留空讓這些習慣變成不指定分類:`);
-      if(target === null) return;
-      if(target.trim()){
-        const matched = state.categories.find(x=>x.label === target.trim() && x.id !== id);
-        if(!matched){ alert('找不到這個分類名稱,請確認拼字。'); return; }
-        state.habits.forEach(h=>{ if(h.category===id) h.category = matched.id; });
-      }else{
-        state.habits.forEach(h=>{ if(h.category===id) h.category = ''; });
-      }
-    }else{
-      if(!confirm(`刪除「${c.label}」這個分類?`)) return;
-    }
-    state.categories = state.categories.filter(x=>x.id!==id);
-    renderSettings(); renderAll(); await saveState();
-  }));
 }
 
 function exportData(){
