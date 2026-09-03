@@ -386,7 +386,27 @@ function getCategoryLabel(id){ if(!id) return ''; const c = state.categories.fin
 function getTypeLabel(key){ const t = TYPE_LIST.find(x=>x.key===key); return t ? t.label : key; }
 
 /* ---------- Auth ---------- */
-setPersistence(auth, browserLocalPersistence).catch(()=>{});
+setPersistence(auth, browserLocalPersistence).catch((e)=>{
+  console.warn('setPersistence failed', e);
+});
+
+function safeSessionSet(key, val){
+  try{ sessionStorage.setItem(key, val); }catch(e){ /* Private Browsing may block this — ignore */ }
+}
+function safeSessionGet(key){
+  try{ return sessionStorage.getItem(key); }catch(e){ return null; }
+}
+function safeSessionRemove(key){
+  try{ sessionStorage.removeItem(key); }catch(e){}
+}
+function describeError(e){
+  if(!e) return '未知錯誤';
+  const parts = [];
+  if(e.code) parts.push(e.code);
+  if(e.name && e.name !== e.code) parts.push(e.name);
+  if(e.message) parts.push(e.message);
+  return parts.length ? parts.join(' · ') : String(e);
+}
 
 function isInAppBrowser(){
   const ua = navigator.userAgent || '';
@@ -408,34 +428,36 @@ document.getElementById('googleBtn').addEventListener('click', async () => {
     return;
   }
   document.getElementById('loginStatus').textContent = '登入中…';
-  if(shouldUseRedirectDirectly()){
-    try{
-      sessionStorage.setItem('authRedirectAttempt', '1');
-      await signInWithRedirect(auth, provider);
-    }catch(e){ document.getElementById('loginStatus').textContent = '登入失敗,請再試一次(' + e.code + ')'; }
-    return;
-  }
   try{
+    if(shouldUseRedirectDirectly()){
+      safeSessionSet('authRedirectAttempt', '1');
+      await signInWithRedirect(auth, provider);
+      return;
+    }
     await signInWithPopup(auth, provider);
   }catch(e){
+    console.error('primary sign-in attempt failed', e);
     try{
-      sessionStorage.setItem('authRedirectAttempt', '1');
+      safeSessionSet('authRedirectAttempt', '1');
       await signInWithRedirect(auth, provider);
+    }catch(e2){
+      console.error('redirect fallback also failed', e2);
+      document.getElementById('loginStatus').textContent = '登入失敗:' + describeError(e2);
     }
-    catch(e2){ document.getElementById('loginStatus').textContent = '登入失敗,請再試一次(' + e2.code + ')'; }
   }
 });
 document.getElementById('signOutBtn').addEventListener('click', () => signOut(auth));
 
 getRedirectResult(auth).then((result)=>{
-  const attempted = sessionStorage.getItem('authRedirectAttempt');
-  sessionStorage.removeItem('authRedirectAttempt');
+  const attempted = safeSessionGet('authRedirectAttempt');
+  safeSessionRemove('authRedirectAttempt');
   if(attempted && !result){
-    document.getElementById('loginStatus').textContent = '登入沒有完成。請確認是用手機的 Safari 或 Chrome 直接開啟此網址(不是 App 內建瀏覽器),並允許網站的追蹤/Cookie 權限,再試一次。';
+    document.getElementById('loginStatus').textContent = '登入沒有完成(沒有取得登入結果)。可能是無痕模式、隱私設定,或瀏覽器封鎖了必要的儲存功能。請改用一般(非無痕)模式的 Safari 或 Chrome 開啟此網址再試一次。';
   }
 }).catch((e)=>{
-  sessionStorage.removeItem('authRedirectAttempt');
-  document.getElementById('loginStatus').textContent = '登入失敗,請再試一次(' + (e && e.code ? e.code : '未知錯誤') + ')';
+  console.error('getRedirectResult error', e);
+  safeSessionRemove('authRedirectAttempt');
+  document.getElementById('loginStatus').textContent = '登入失敗:' + describeError(e);
 });
 
 onAuthStateChanged(auth, (user) => {
