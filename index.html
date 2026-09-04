@@ -303,6 +303,7 @@
     使用 Google 登入
   </button>
   <div id="loginStatus"></div>
+  <button id="manualRefreshBtn" style="margin-top:14px;background:none;border:none;color:var(--ink-muted);font-size:12.5px;text-decoration:underline;cursor:pointer;">如果已經完成登入,點這裡重新整理</button>
 </div>
 
 <div id="app" hidden>
@@ -412,12 +413,6 @@ function isInAppBrowser(){
   const ua = navigator.userAgent || '';
   return /FBAN|FBAV|Instagram|Line\/|MicroMessenger|WeChat|Twitter|LinkedInApp/i.test(ua);
 }
-function shouldUseRedirectDirectly(){
-  const ua = navigator.userAgent || '';
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(ua);
-  const isSafariDesktop = /^((?!chrome|android).)*safari/i.test(ua);
-  return isMobile || isSafariDesktop;
-}
 if(isInAppBrowser()){
   document.getElementById('loginStatus').textContent = '偵測到目前是在 App 內建瀏覽器打開(例如 LINE / IG / FB),Google 登入無法在這裡完成。請點右上角「⋯」選「用瀏覽器開啟」,改用 Safari 或 Chrome 開啟這個網址再登入。';
 }
@@ -427,16 +422,11 @@ document.getElementById('googleBtn').addEventListener('click', async () => {
     document.getElementById('loginStatus').textContent = '請先改用 Safari 或 Chrome 開啟這個網址(右上角「⋯」→ 用瀏覽器開啟),才能完成 Google 登入。';
     return;
   }
-  document.getElementById('loginStatus').textContent = '登入中…';
+  document.getElementById('loginStatus').textContent = '登入中…如果跳出新分頁,請在裡面完成選擇帳號,再回到這一頁。';
   try{
-    if(shouldUseRedirectDirectly()){
-      safeSessionSet('authRedirectAttempt', '1');
-      await signInWithRedirect(auth, provider);
-      return;
-    }
     await signInWithPopup(auth, provider);
   }catch(e){
-    console.error('primary sign-in attempt failed', e);
+    console.error('popup sign-in failed', e);
     try{
       safeSessionSet('authRedirectAttempt', '1');
       await signInWithRedirect(auth, provider);
@@ -447,12 +437,13 @@ document.getElementById('googleBtn').addEventListener('click', async () => {
   }
 });
 document.getElementById('signOutBtn').addEventListener('click', () => signOut(auth));
+document.getElementById('manualRefreshBtn').addEventListener('click', () => location.reload());
 
 getRedirectResult(auth).then((result)=>{
   const attempted = safeSessionGet('authRedirectAttempt');
   safeSessionRemove('authRedirectAttempt');
   if(attempted && !result){
-    document.getElementById('loginStatus').textContent = '登入沒有完成(沒有取得登入結果)。可能是無痕模式、隱私設定,或瀏覽器封鎖了必要的儲存功能。請改用一般(非無痕)模式的 Safari 或 Chrome 開啟此網址再試一次。';
+    document.getElementById('loginStatus').textContent = '登入沒有完成(沒有取得登入結果)。請改用「使用 Google 登入」按鈕再試一次;如果跳出新分頁完成選帳號後畫面沒有自動變化,請手動切回這個分頁並重新整理。';
   }
 }).catch((e)=>{
   console.error('getRedirectResult error', e);
